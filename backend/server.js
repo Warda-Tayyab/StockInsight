@@ -11,6 +11,8 @@ app.use(express.json());
 // ROUTES — yahan upar rakho
 const testRoute = require("./routes/testRoute");
 app.use("/api", testRoute);
+app.use('/api/admin/auth', require('./routes/adminAuthRoutes'));
+app.use('/api/admin/tenants', require('./routes/adminTenantRoutes'));
 
 // DB connection
 mongoose
