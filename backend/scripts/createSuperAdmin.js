@@ -1,19 +1,40 @@
-require('dotenv').config();
-const mongoose = require('mongoose');
-const AdminUser = require('../models/shared/AdminUser');
+// require('dotenv').config();
+// const mongoose = require('mongoose');
+// const AdminUser = require('../models/shared/AdminUser');
 
-async function run() {
-  await mongoose.connect(process.env.MONGO_URI);
+// async function run() {
+//   try {
+//     // 1️⃣ Connect to DB
+//     await mongoose.connect(process.env.MONGO_URI, {
+//       useNewUrlParser: true,
+//       useUnifiedTopology: true
+//     });
 
-  const admin = new AdminUser({
-    email: 'inventoryinsights2102@gmail.com'
-  });
+//     console.log('Connected to MongoDB ✅');
 
-  await admin.setPassword('meerabwarda');
-  await admin.save();
+//     // 2️⃣ Check if admin already exists
+//     const existing = await AdminUser.findOne({ email: 'inventoryinsights2102@gmail.com' });
+//     if (existing) {
+//       console.log('⚠️ Admin already exists');
+//       process.exit();
+//     }
 
-  console.log('✅ Super Admin created');
-  process.exit();
-}
+//     // 3️⃣ Create new admin
+//     const admin = new AdminUser({
+//       email: 'inventoryinsights2102@gmail.com',
+//       role: 'super_admin',   // Optional, default is super_admin
+//       status: 'active'       // Optional, default is active
+//     });
 
-run();
+//     await admin.setPassword('meerabwarda');  // Hash password
+//     await admin.save();
+
+//     console.log('✅ Super Admin created');
+//     process.exit();
+//   } catch (err) {
+//     console.error(err);
+//     process.exit(1);
+//   }
+// }
+
+// run();

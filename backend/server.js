@@ -13,6 +13,8 @@ const testRoute = require("./routes/testRoute");
 app.use("/api", testRoute);
 app.use('/api/admin/auth', require('./routes/adminAuthRoutes'));
 app.use('/api/admin/tenants', require('./routes/adminTenantRoutes'));
+app.use('/api/users/auth', require('./routes/userAuthRoutes'));
+app.use('/api/users/invite', require('./routes/ownerInviteRoutes'));
 
 // DB connection
 mongoose

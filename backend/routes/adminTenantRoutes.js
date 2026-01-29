@@ -1,18 +1,80 @@
 const express = require('express');
 const router = express.Router();
+const crypto = require('crypto');
 const Tenant = require('../models/shared/Tenant');
+const User = require('../models/tenant/User');
 const adminAuthMiddleware = require('../middleware/auth/adminAuthMiddleware');
 
 router.post('/', adminAuthMiddleware, async (req, res) => {
-  const { name, slug } = req.body;
+  try {
+    const {
+      name,
+      slug,
+      ownerEmail,
+      ownerFirstName,
+      ownerLastName,
+      primaryContact,
+      business
+    } = req.body;
 
-  const tenant = await Tenant.create({
-    tenantId: crypto.randomUUID(),
-    name,
-    slug
-  });
+    if (!ownerEmail || !ownerFirstName) {
+      return res.status(400).json({ message: 'Owner first name and email required' });
+    }
 
-  res.json(tenant);
+    // 1️⃣ Invite token generate
+    const inviteToken = crypto.randomBytes(20).toString('hex');
+ 
+
+    const existing = await Tenant.findOne({ slug });
+if (existing) {
+  return res.status(400).json({ message: 'Slug already exists, use a different one' });
+}
+    // 2️⃣ Tenant create
+    const tenant = await Tenant.create({
+      tenantId: crypto.randomUUID(),
+      name,
+      slug,
+      ownerEmail,
+      inviteToken,
+      primaryContact,
+      business
+    });
+
+    let passwordHash = null;
+
+if (req.body.setPasswordNow && req.body.password) {
+  passwordHash = await bcrypt.hash(req.body.password, 10);
+}
+
+// Owner user create
+const owner = new User({
+  tenantId: tenant._id,
+  firstName: ownerFirstName,
+  lastName: ownerLastName,
+  email: ownerEmail,
+  role: 'owner',
+  passwordHash,              // null OR hashed password
+  status: passwordHash ? 'active' : 'invited'
+});
+
+await owner.save();
+
+
+    // 4️⃣ Link owner to tenant
+    tenant.ownerUserId = owner._id;
+    await tenant.save();
+
+    // 5️⃣ Response (later send email invite)
+    res.json({
+      message: 'Tenant created, owner invite token generated',
+      tenant,
+      inviteToken
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
 module.exports = router;
