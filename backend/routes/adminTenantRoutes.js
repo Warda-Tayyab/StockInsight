@@ -6,6 +6,8 @@ const Tenant = require('../models/shared/Tenant');
 const User = require('../models/tenant/User');
 const adminAuthMiddleware = require('../middleware/auth/adminAuthMiddleware');
 
+
+//CREATE TENANT (Super Admin)
 router.post('/', adminAuthMiddleware, async (req, res) => {
   try {
     const {
@@ -31,7 +33,7 @@ if (!ownerEmail) {
   });
 }
 
-    // 1️⃣ Invite token generate
+    //  Invite token generate
     const inviteToken = crypto.randomBytes(20).toString('hex');
  
 
@@ -39,9 +41,9 @@ if (!ownerEmail) {
 if (existing) {
   return res.status(400).json({ message: 'Slug already exists, use a different one' });
 }
-    // 2️⃣ Tenant create
+    //  Tenant create
     const tenant = await Tenant.create({
-      tenantId: crypto.randomUUID(),
+     // tenantId: crypto.randomUUID(),
       name,
       slug,
       ownerEmail,
@@ -70,11 +72,11 @@ const owner = new User({
 await owner.save();
 
 
-    // 4️⃣ Link owner to tenant
+    //  Link owner to tenant
     tenant.ownerUserId = owner._id;
     await tenant.save();
 
-    // 5️⃣ Response (later send email invite)
+    //  Response (later send email invite)
     res.json({
       message: 'Tenant created, owner invite token generated',
       tenant,
@@ -97,4 +99,121 @@ await owner.save();
  
 });
 
+
+//GET ALL TENANTS (Super Admin)
+router.get('/', adminAuthMiddleware, async (req, res) => {
+  try {
+    const tenants = await Tenant.find()
+      .populate('ownerUserId', 'firstName lastName email status')
+      .sort({ createdAt: -1 });
+
+    res.json({ tenants });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+//GET SINGLE TENANT
+router.get('/:id', adminAuthMiddleware, async (req, res) => {
+  try {
+    const tenant = await Tenant.findById(req.params.id)
+      .populate('ownerUserId', 'firstName lastName email status');
+
+    if (!tenant) {
+      return res.status(404).json({ message: 'Tenant not found' });
+    }
+
+    res.json({ tenant });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// UPDATE TENANT DETAILS
+
+router.put('/:id', adminAuthMiddleware, async (req, res) => {
+  try {
+    const tenant = await Tenant.findById(req.params.id);
+    if (!tenant) {
+      return res.status(404).json({ message: 'Tenant not found' });
+    }
+
+    const {
+      name,
+      slug,
+      primaryContact,
+      business
+    } = req.body;
+
+    if (name) tenant.name = name;
+    if (slug) tenant.slug = slug;
+    if (primaryContact) tenant.primaryContact = primaryContact;
+    if (business) tenant.business = business;
+
+    await tenant.save();
+
+    res.json({
+      message: 'Tenant updated successfully',
+      tenant
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+   // UPDATE TENANT STATUS (active / suspended / trial)
+   
+router.patch('/:id/status', adminAuthMiddleware, async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    if (!['active', 'suspended', 'trial'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status' });
+    }
+
+    const tenant = await Tenant.findById(req.params.id);
+    if (!tenant) {
+      return res.status(404).json({ message: 'Tenant not found' });
+    }
+
+    tenant.status = status;
+    await tenant.save();
+
+    // Also update owner status
+    if (tenant.ownerUserId) {
+      await User.findByIdAndUpdate(tenant.ownerUserId, {
+        status: status === 'active' ? 'active' : 'suspended'
+      });
+    }
+
+    res.json({
+      message: `Tenant status updated to ${status}`,
+      tenant
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+    //DELETE TENANT (Hard Delete)
+ 
+router.delete('/:id', adminAuthMiddleware, async (req, res) => {
+  try {
+    const tenant = await Tenant.findById(req.params.id);
+    if (!tenant) {
+      return res.status(404).json({ message: 'Tenant not found' });
+    }
+
+    await User.deleteMany({ tenantId: tenant._id });
+    await tenant.deleteOne();
+
+    res.json({ message: 'Tenant deleted successfully' });
+
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 module.exports = router;

@@ -16,7 +16,7 @@ const contactSchema = new mongoose.Schema({
 }, { _id: false });
 
 const tenantSchema = new mongoose.Schema({
-  tenantId: { type: String, unique: true, default: () => crypto.randomUUID() },
+  //tenantId: { type: String, unique: true, default: () => crypto.randomUUID() },
   name: { type: String, required: true },
   slug: { type: String, required: true, unique: true, lowercase: true },
 
