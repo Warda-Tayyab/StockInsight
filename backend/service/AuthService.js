@@ -4,7 +4,13 @@ const AdminUser = require('../models/shared/AdminUser');
 class AuthService {
 
   static async adminLogin(email, password, meta) {
+ if (!email) {
+      throw { status: 400, message: 'Email is required' };
+    }
 
+    if (!password) {
+      throw { status: 400, message: 'Password is required' };
+    }
     // 1️⃣ Admin user dhoondo
     const admin = await AdminUser.findOne({ email });
 

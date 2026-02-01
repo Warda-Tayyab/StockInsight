@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const Tenant = require('../models/shared/Tenant');
 const User = require('../models/tenant/User');
@@ -17,9 +18,18 @@ router.post('/', adminAuthMiddleware, async (req, res) => {
       business
     } = req.body;
 
-    if (!ownerEmail || !ownerFirstName) {
-      return res.status(400).json({ message: 'Owner first name and email required' });
-    }
+   
+if (!ownerFirstName) {
+  return res.status(400).json({
+    message: 'Owner first name is required'
+  });
+}
+
+if (!ownerEmail) {
+  return res.status(400).json({
+    message: 'Owner email is required'
+  });
+}
 
     // 1️⃣ Invite token generate
     const inviteToken = crypto.randomBytes(20).toString('hex');
@@ -71,10 +81,20 @@ await owner.save();
       inviteToken
     });
 
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
   }
+  catch (error) {
+
+  if (error.name === 'ValidationError') {
+    const messages = Object.values(error.errors).map(e => e.message);
+
+    return res.status(400).json({
+      message: messages
+    });
+  }
+
+  res.status(500).json({ message: 'Server error' });
+}
+ 
 });
 
 module.exports = router;

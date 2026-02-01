@@ -8,9 +8,14 @@ const userSchema = new mongoose.Schema({
     required: true
   },
 
-  firstName: { type: String, required: true },
+  firstName: { type: String, 
+    required: [true, 'First name is required'] },
+  
   lastName: { type: String },
-  email: { type: String, required: true },
+  email: { type: String, 
+    required: [true, 'Email is required'],
+  match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email']
+   },
 
   passwordHash: { type: String, default: null },
 
