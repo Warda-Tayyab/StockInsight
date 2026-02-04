@@ -9,9 +9,14 @@ app.use(cors());
 app.use(express.json());
 
 // ROUTES — yahan upar rakho
+const productRoutes = require('./routes/productRoutes');
+
 const testRoute = require("./routes/testRoute");
 app.use("/api", testRoute);
 app.use('/api/admin/auth', require('./routes/adminAuthRoutes'));
+app.use('/api/categories', require('./routes/categoryRoutes'));
+app.use('/api/products', productRoutes);
+
 app.use('/api/admin/tenants', require('./routes/adminTenantRoutes'));
 
 // DB connection
