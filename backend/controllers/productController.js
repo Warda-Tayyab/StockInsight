@@ -79,20 +79,68 @@ exports.createProduct = async (req, res) => {
  */
 exports.getProducts = async (req, res) => {
   try {
-    const { tenantId } = req.query;
+    const {
+      tenantId,
+      categoryId,
+      status,
+      supplierName,
+      unit,
+      minPrice,
+      maxPrice,
+      lowStock,
+      search
+    } = req.query;
 
-    // 🔴 Tenant validation
+    // 🔴 tenant required
     if (!tenantId) {
       return res.status(400).json({ message: 'Tenant id is required' });
     }
 
-    const products = await Product.find({ tenantId });
+    // 🧠 filter object
+    const filter = { tenantId };
+
+    // 📂 category filter
+    if (categoryId) filter.categoryId = categoryId;
+
+    // 🟢 status filter
+    if (status) filter.status = status;
+
+    // 🧾 supplier filter
+    if (supplierName) filter.supplierName = supplierName;
+
+    // 📏 unit filter
+    if (unit) filter.unit = unit;
+
+    // 💰 price range filter
+    if (minPrice || maxPrice) {
+      filter.sellingPrice = {};
+      if (minPrice) filter.sellingPrice.$gte = Number(minPrice);
+      if (maxPrice) filter.sellingPrice.$lte = Number(maxPrice);
+    }
+
+    // ⚠️ low stock filter
+    if (lowStock === 'true') {
+      filter.$expr = { $lte: ['$quantity', '$reorderLevel'] };
+    }
+
+    // 🔍 search filter
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { sku: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    const products = await Product.find(filter)
+      .populate('categoryId', 'name');
+
     res.json(products);
 
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 /**
  * ✅ UPDATE PRODUCT
