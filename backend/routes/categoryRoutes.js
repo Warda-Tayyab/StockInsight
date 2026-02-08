@@ -34,5 +34,52 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+// PUT /api/categories/:id
+router.put('/:id', async (req, res) => {
+  try {
+    const { name, status } = req.body;
+
+    if (!name && !status) {
+      return res.status(400).json({ message: 'Nothing to update' });
+    }
+
+    const category = await Category.findByIdAndUpdate(
+      req.params.id,
+      { name, status },
+      { new: true, runValidators: true }
+    );
+
+    if (!category) {
+      return res.status(404).json({ message: 'Category not found' });
+    }
+
+    res.json(category);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+const Product = require('../models/shared/Product');
+
+// DELETE /api/categories/:id
+router.delete('/:id', async (req, res) => {
+  try {
+    const productsCount = await Product.countDocuments({
+      categoryId: req.params.id
+    });
+
+    if (productsCount > 0) {
+      return res.status(400).json({
+        message: 'Category has products. Deactivate instead.'
+      });
+    }
+
+    await Category.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Category deleted' });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 
 module.exports = router;
