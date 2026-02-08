@@ -3,6 +3,9 @@ require('dotenv').config({ path: '../.env' });
 const mongoose = require('mongoose');
 const Category = require('../models/shared/Category');
 
+// 🔴 JIS TENANT KE LIYE SEED KARNA HAI
+const TENANT_ID = '697d415d6d8c6dc9bd7b9164';
+
 const categories = [
   "Electronics",
   "Clothing / Apparel",
@@ -33,16 +36,26 @@ async function seedCategories() {
 
     for (const name of categories) {
       await Category.updateOne(
-        { name },
-        { $set: { name } },
+        {
+          tenantId: TENANT_ID,
+          name: name
+        },
+        {
+          $set: {
+            tenantId: TENANT_ID,
+            name: name,
+            status: 'active'
+          }
+        },
         { upsert: true }
       );
     }
 
-    console.log('🌱 Categories seeded successfully');
+    console.log('🌱 Tenant-wise categories seeded successfully');
     process.exit(0);
+
   } catch (err) {
-    console.error('❌ Seeding error:', err);
+    console.error('❌ Seeding error:', err.message);
     process.exit(1);
   }
 }
