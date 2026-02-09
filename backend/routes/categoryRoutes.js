@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Category = require('../models/shared/Category');
-const Product = require('../models/shared/Product');
+const Category = require('../models/tenant/Category');
+const Product = require('../models/tenant/Product');
 
 // ✅ Create category
 router.post('/', async (req, res) => {

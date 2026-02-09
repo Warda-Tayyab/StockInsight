@@ -1,9 +1,10 @@
-const Product = require('../models/shared/Product');
+const Product = require('../models/tenant/Product');
 const Tenant = require('../models/shared/Tenant');
 
 /**
  * ✅ CREATE PRODUCT
  */
+
 exports.createProduct = async (req, res) => {
   try {
     const {
@@ -38,6 +39,11 @@ exports.createProduct = async (req, res) => {
     if (!tenant) {
       return res.status(404).json({ message: 'Tenant not found' });
     }
+// 🔍 Check duplicate SKU for the same tenant
+const existingProduct = await Product.findOne({ tenantId, sku });
+if (existingProduct) {
+  return res.status(400).json({ message: 'SKU already exists for this tenant' });
+}
 
     // 🆕 Create product
     const product = await Product.create({
@@ -141,7 +147,7 @@ exports.getProducts = async (req, res) => {
   }
 };
 
-
+// 🔍 Check duplicate SKU if user is updating SKU
 /**
  * ✅ UPDATE PRODUCT
  */
@@ -154,13 +160,25 @@ exports.updateProduct = async (req, res) => {
       return res.status(400).json({ message: 'Tenant id is required' });
     }
 
+    // 🔍 Check duplicate SKU if user is updating SKU
+    if (req.body.sku) {
+      const duplicate = await Product.findOne({
+        tenantId,
+        sku: req.body.sku,
+        _id: { $ne: req.params.id } // ignore current product
+      });
+      if (duplicate) {
+        return res.status(400).json({ message: 'SKU already exists for this tenant' });
+      }
+    }
+
     // ✏️ Update product only if belongs to same tenant
     const product = await Product.findOneAndUpdate(
       { _id: req.params.id, tenantId },
       req.body,
       {
         new: true,
-        runValidators: true // ✅ VERY IMPORTANT (real-world practice)
+        runValidators: true
       }
     );
 
@@ -173,8 +191,6 @@ exports.updateProduct = async (req, res) => {
     res.json(product);
 
   } catch (err) {
-
-    // 🔥 Validation errors on update
     if (err.name === 'ValidationError') {
       const errors = Object.values(err.errors).map(e => e.message);
       return res.status(400).json({ errors });
@@ -183,6 +199,7 @@ exports.updateProduct = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 /**
  * ✅ DELETE PRODUCT

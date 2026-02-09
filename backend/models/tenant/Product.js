@@ -20,14 +20,13 @@ const productSchema = new mongoose.Schema({
     ref: 'Category',
     required: [true, 'Category is required']
   },
+sku: {
+  type: String,
+  required: [true, 'SKU is required'],
+  trim: true
+},
 
-  sku: {
-    type: String,
-    required: [true, 'SKU is required'],
-    unique: true,
-    trim: true
-  },
-
+  
   description: {
     type: String,
     default: ''
@@ -87,6 +86,9 @@ const productSchema = new mongoose.Schema({
   }
 
 }, { timestamps: true });
-
-
+// 🔑 Tenant + SKU unique
+productSchema.index(
+  { tenantId: 1, sku: 1 },
+  { unique: true }
+);
 module.exports = mongoose.model('Product', productSchema);
