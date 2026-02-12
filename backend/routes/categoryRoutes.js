@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Category = require('../models/tenant/Category');
 const Product = require('../models/tenant/Product');
+const Tenant = require('../models/shared/Tenant');
+
 
 // ✅ Create category
 router.post('/', async (req, res) => {
@@ -16,6 +18,9 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'Category name is required' });
     }
 
+    const tenant = await Tenant.findById(tenantId);
+    if (!tenant)
+      return res.status(404).json({ message: 'Tenant not found' });
     const category = await Category.create({ tenantId, name });
 
     res.status(201).json(category);
@@ -41,7 +46,10 @@ router.get('/', async (req, res) => {
     if (!tenantId) {
       return res.status(400).json({ message: 'Tenant id is required' });
     }
-
+    const tenant = await Tenant.findById(tenantId);
+    if (!tenant)
+      return res.status(404).json({ message: 'Tenant not found' });
+  
     const categories = await Category.find({ tenantId });
     res.json(categories);
 
@@ -58,6 +66,10 @@ router.put('/:id', async (req, res) => {
     if (!tenantId) {
       return res.status(400).json({ message: 'Tenant id is required' });
     }
+
+    const tenant = await Tenant.findById(tenantId);
+    if (!tenant)
+      return res.status(404).json({ message: 'Tenant not found' });
 
     const category = await Category.findOneAndUpdate(
       { _id: req.params.id, tenantId },
@@ -84,6 +96,10 @@ router.delete('/:id', async (req, res) => {
     if (!tenantId) {
       return res.status(400).json({ message: 'Tenant id is required' });
     }
+   
+    const tenant = await Tenant.findById(tenantId);
+    if (!tenant)
+      return res.status(404).json({ message: 'Tenant not found' });
 
     const productsCount = await Product.countDocuments({
       categoryId: req.params.id,
