@@ -7,8 +7,9 @@ const Category = require('../models/tenant/Category');
 
 exports.createProduct = async (req, res) => {
   try {
+    const tenantId = req.auth.tenantId; // 🔥 FROM TOKEN
+
     const {
-      tenantId,
       name,
       categoryId,
       sku,
@@ -22,8 +23,6 @@ exports.createProduct = async (req, res) => {
       image
     } = req.body;
 
-    // 🔴 Required field validations (user-friendly errors)
-    if (!tenantId) return res.status(400).json({ message: 'Tenant id is required' });
     if (!name) return res.status(400).json({ message: 'Product name is required' });
     if (!categoryId) return res.status(400).json({ message: 'Category is required' });
     if (!sku) return res.status(400).json({ message: 'SKU is required' });
@@ -75,18 +74,9 @@ if (existingProduct) {
     });
     
   } catch (err) {
-
-    // 🔥 Mongoose validation errors
-    if (err.name === 'ValidationError') {
-      const errors = Object.values(err.errors).map(e => e.message);
-      return res.status(400).json({ errors });
-    }
-
-    // 🔁 Duplicate SKU error
     if (err.code === 11000) {
       return res.status(400).json({ message: 'SKU already exists' });
     }
-
     res.status(500).json({ message: err.message });
   }
 };
@@ -96,8 +86,9 @@ if (existingProduct) {
  */
 exports.getProducts = async (req, res) => {
   try {
+    const tenantId = req.auth.tenantId; // 🔥 TOKEN
+
     const {
-      tenantId,
       categoryId,
       status,
       supplierName,
@@ -141,26 +132,19 @@ exports.getProducts = async (req, res) => {
 
     // 🟢 status filter
     if (status) filter.status = status;
-
-    // 🧾 supplier filter
     if (supplierName) filter.supplierName = supplierName;
-
-    // 📏 unit filter
     if (unit) filter.unit = unit;
 
-    // 💰 price range filter
     if (minPrice || maxPrice) {
       filter.sellingPrice = {};
       if (minPrice) filter.sellingPrice.$gte = Number(minPrice);
       if (maxPrice) filter.sellingPrice.$lte = Number(maxPrice);
     }
 
-    // ⚠️ low stock filter
     if (lowStock === 'true') {
       filter.$expr = { $lte: ['$quantity', '$reorderLevel'] };
     }
 
-    // 🔍 search filter
     if (search) {
       filter.$or = [
         { name: { $regex: search, $options: 'i' } },
@@ -235,9 +219,7 @@ exports.updateProduct = async (req, res) => {
     );
 
     if (!product) {
-      return res.status(404).json({
-        message: 'Product not found for this tenant'
-      });
+      return res.status(404).json({ message: 'Product not found' });
     }
 
     res.status(200).json({
@@ -256,6 +238,7 @@ exports.updateProduct = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 
 /**
@@ -285,9 +268,7 @@ exports.deleteProduct = async (req, res) => {
     });
 
     if (!product) {
-      return res.status(404).json({
-        message: 'Product not found for this tenant'
-      });
+      return res.status(404).json({ message: 'Product not found' });
     }
 
     res.json({ message: 'Product deleted successfully' });
