@@ -1,12 +1,32 @@
-import { useEffect } from "react";
-import API from "./services/api";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/superAdmin/login";
+import Dashboard from "./pages/superAdmin/Dashboard";
+import DashboardHome from "./pages/superAdmin/DashboardHome";
+import TenantCreate from "./pages/superAdmin/TenantCreate";
+import TenantList from "./pages/superAdmin/TenantList";
 
 function App() {
-  useEffect(() => {
-    API.get("/api/test").then(res => console.log(res.data));
-  }, []);
+  return (
+    <Router>
+      <Routes>
+        {/* Super Admin Login */}
+        <Route path="/super-admin/login" element={<Login />} />
 
-  return <h1>Inventory System</h1>;
+        {/* Dashboard wrapper with nested routes */}
+        <Route path="/super-admin/dashboard" element={<Dashboard />}>
+          {/* Dashboard home content */}
+          <Route index element={<DashboardHome />} />
+
+          {/* Tenant pages */}
+          <Route path="create-tenant" element={<TenantCreate />} />
+          <Route path="tenant-list" element={<TenantList />} />
+        </Route>
+
+        {/* Default redirect */}
+        <Route path="*" element={<Navigate to="/super-admin/login" />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
