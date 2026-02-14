@@ -1,0 +1,52 @@
+/* Dashboard Home container */
+.dashboard-home {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+/* Heading */
+.dashboard-home h2 {
+  margin-bottom: 20px;
+  font-size: 28px;
+  color: #222;
+}
+
+/* Top cards container */
+.top-cards {
+  display: flex;
+  flex-wrap: wrap; /* wrap on small screens */
+  gap: 20px;       /* space between cards */
+}
+
+/* Individual card styling */
+.top-cards .card {
+  flex: 1 1 200px; /* grow, shrink, min width */
+  background-color: #f8f9fa;
+  border-left: 6px solid #4caf50; /* colored accent */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  font-size: 18px;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-align: center;
+}
+
+/* Card hover effect */
+.top-cards .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+/* Optional: Different colors for different statuses */
+.top-cards .card:nth-child(2) { border-left-color: #28a745; } /* Active */
+.top-cards .card:nth-child(3) { border-left-color: #dc3545; } /* Suspended */
+.top-cards .card:nth-child(4) { border-left-color: #ffc107; } /* Trial */
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .top-cards {
+    flex-direction: column;
+  }
+}

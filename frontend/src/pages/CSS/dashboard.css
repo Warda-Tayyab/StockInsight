@@ -1,0 +1,17 @@
+.dashboard-wrapper {
+  display: flex;
+}
+
+.dashboard-content {
+  margin-left: 220px; /* sidebar width */
+  padding: 30px;
+  flex: 1;
+  min-height: 100vh;
+  background-color: #f9fafb; /* soft light background */
+}
+
+.dashboard-content h1 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #333;
+}
