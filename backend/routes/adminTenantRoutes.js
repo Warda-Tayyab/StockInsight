@@ -4,11 +4,15 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const Tenant = require('../models/shared/Tenant');
 const User = require('../models/tenant/User');
-const adminAuthMiddleware = require('../middleware/auth/adminAuthMiddleware');
-
+//const adminAuthMiddleware = require('../middleware/auth/adminAuthMiddleware');
+const { authenticate, authorize } = require('../middleware/auth/authMiddleware');
 
 //CREATE TENANT (Super Admin)
-router.post('/', adminAuthMiddleware, async (req, res) => {
+router.post(
+  '/',
+  authenticate,
+  authorize({ requireSuperAdmin: true }),
+   async (req, res) => {
   try {
     const {
       name,
@@ -101,7 +105,11 @@ await owner.save();
 
 
 //GET ALL TENANTS (Super Admin)
-router.get('/', adminAuthMiddleware, async (req, res) => {
+router.get(
+  '/',
+  authenticate,
+  authorize({ requireSuperAdmin: true }),
+  async (req, res) => {
   try {
     const tenants = await Tenant.find()
       .populate('ownerUserId', 'firstName lastName email status')
@@ -114,7 +122,10 @@ router.get('/', adminAuthMiddleware, async (req, res) => {
 });
 
 //GET SINGLE TENANT
-router.get('/:id', adminAuthMiddleware, async (req, res) => {
+router.get(
+  '/:id',
+  authenticate,
+  authorize({ requireSuperAdmin: true }),async (req, res) => {
   try {
     const tenant = await Tenant.findById(req.params.id)
       .populate('ownerUserId', 'firstName lastName email status');
@@ -131,7 +142,10 @@ router.get('/:id', adminAuthMiddleware, async (req, res) => {
 
 // UPDATE TENANT DETAILS
 
-router.put('/:id', adminAuthMiddleware, async (req, res) => {
+router.put(
+  '/:id',
+  authenticate,
+  authorize({ requireSuperAdmin: true }), async (req, res) => {
   try {
     const tenant = await Tenant.findById(req.params.id);
     if (!tenant) {
@@ -164,7 +178,11 @@ router.put('/:id', adminAuthMiddleware, async (req, res) => {
 
    // UPDATE TENANT STATUS (active / suspended / trial)
    
-router.patch('/:id/status', adminAuthMiddleware, async (req, res) => {
+   router.patch(
+    '/:id/status',
+    authenticate,
+    authorize({ requireSuperAdmin: true }),
+     async (req, res) => {
   try {
     const { status } = req.body;
 
@@ -200,7 +218,11 @@ router.patch('/:id/status', adminAuthMiddleware, async (req, res) => {
 
     //DELETE TENANT (Hard Delete)
  
-router.delete('/:id', adminAuthMiddleware, async (req, res) => {
+    router.delete(
+      '/:id',
+      authenticate,
+      authorize({ requireSuperAdmin: true }),
+       async (req, res) => {
   try {
     const tenant = await Tenant.findById(req.params.id);
     if (!tenant) {

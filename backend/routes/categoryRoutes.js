@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const { authenticate, authorize } = require('../middleware/auth/authMiddleware');
 
-const authenticate = require('../middleware/auth/authenticate');
-const ownerOnly = require('../middleware/auth/ownerOnlyMiddleware');
+// const authenticate = require('../middleware/auth/authenticate');
+// const ownerOnly = require('../middleware/auth/ownerOnlyMiddleware');
 
 const Category = require('../models/tenant/Category');
 const Product = require('../models/tenant/Product');
@@ -12,7 +13,7 @@ const Product = require('../models/tenant/Product');
 router.post(
   '/',
   authenticate,
-  ownerOnly,
+  authorize({ roles: ['owner'], requireTenantActive: true }),
   async (req, res) => {
     try {
       const tenantId = req.auth.tenantId;
@@ -41,7 +42,7 @@ router.post(
 router.get(
   '/',
   authenticate,
-  ownerOnly,
+  authorize({ roles: ['owner'], requireTenantActive: true }),
   async (req, res) => {
     try {
       const tenantId = req.auth.tenantId;
@@ -60,7 +61,7 @@ router.get(
 router.put(
   '/:id',
   authenticate,
-  ownerOnly,
+  authorize({ roles: ['owner'], requireTenantActive: true }),
   async (req, res) => {
     try {
       const tenantId = req.auth.tenantId;
@@ -91,7 +92,7 @@ router.put(
 router.delete(
   '/:id',
   authenticate,
-  ownerOnly,
+  authorize({ roles: ['owner'], requireTenantActive: true }),
   async (req, res) => {
     try {
       const tenantId = req.auth.tenantId;
