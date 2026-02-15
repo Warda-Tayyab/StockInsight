@@ -38,12 +38,14 @@ exports.createProduct = async (req, res) => {
     if (!tenant) {
       return res.status(404).json({ message: 'Tenant not found' });
     }
+ 
+    const mongoose = require('mongoose');
+    if (categoryId) {
+      if (!mongoose.Types.ObjectId.isValid(categoryId)) 
+        return res.status(400).json({ message: 'Invalid category id' });
 
-    
-    //  NEW — Check if category exists and belongs to tenant
-    const category = await Category.findOne({ _id: categoryId, tenantId });
-    if (!category) {
-      return res.status(404).json({ message: 'Category not found ' });
+      const category = await Category.findOne({ _id: categoryId, tenantId });
+      if (!category) return res.status(404).json({ message: 'Category not found for this tenant' });
     }
 // 🔍 Check duplicate SKU for the same tenant
 const existingProduct = await Product.findOne({ tenantId, sku });
@@ -176,8 +178,8 @@ exports.getProducts = async (req, res) => {
  */
 exports.updateProduct = async (req, res) => {
   try {
-    const { tenantId , categoryId} = req.body;
-
+    const tenantId = req.auth.tenantId;
+    const { categoryId } = req.body;
     // 🔴 Tenant validation
     if (!tenantId) {
       return res.status(400).json({ message: 'Tenant id is required' });
@@ -191,11 +193,12 @@ exports.updateProduct = async (req, res) => {
       });
     }
     if (categoryId) {
-    const category = await Category.findOne({ _id: categoryId, tenantId });
+      if (!mongoose.Types.ObjectId.isValid(categoryId)) 
+        return res.status(400).json({ message: 'Invalid category id' });
 
-      if (!category) {
-        return res.status(404).json({ message: 'Category not found for this tenant' });
-      }}
+      const category = await Category.findOne({ _id: categoryId, tenantId });
+      if (!category) return res.status(404).json({ message: 'Category not found for this tenant' });
+    }
     // 🔍 Check duplicate SKU if user is updating SKU
     if (req.body.sku) {
       const duplicate = await Product.findOne({
@@ -246,8 +249,7 @@ exports.updateProduct = async (req, res) => {
  */
 exports.deleteProduct = async (req, res) => {
   try {
-    // Allow tenantId from body OR query
-    const tenantId = req.body.tenantId || req.query.tenantId;
+    const tenantId = req.auth.tenantId;
 
     // 🔴 Tenant validation
     if (!tenantId) {
