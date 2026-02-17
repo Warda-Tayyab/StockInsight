@@ -1,33 +1,32 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/tenant/User');
 const Tenant = require('../models/shared/Tenant');
-
+const errors = require('../utils/validation');
 class UserAuthService {
 
 static async login(email, password, slug) {
-   // 1️⃣ Tenant find by slug
-    const tenant = await Tenant.findOne({ slug });
-    if (!tenant) {
-      throw { status: 401, message: 'Company not found' };
+  const tenant = await Tenant.findOne({ slug: slug.trim() });
+  if (!tenant) {
+    return errors.COMPANY_NOT_FOUND;
+}
+    
+    const user = await User.findOne({
+    email,
+    tenantId: tenant._id
+  });
+ 
+ if (!user) {
+  return errors.USER_NOT_FOUND;
     }
-        // 2️⃣ User find under tenant
-        
-const user = await User.findOne({
-  email,
-  tenantId: tenant._id
-});
- // 3️⃣ Email or password invalid
-    if (!user || !(await user.comparePassword(password))) {
-      throw { status: 401, message: 'Invalid credentials' };
-    }
-
-  
+const isMatch = await user.comparePassword(password);
+if (!isMatch) {
+  return errors.INVALID_PASSWORD;
+}
    
 
-    if (user.status !== 'active') {
-      throw new Error('User account suspended');
-    }
-
+if (user.status !== 'active') {
+  return errors.ACCOUNT_SUSPENDED;
+}
     
     const token = jwt.sign(
       {
