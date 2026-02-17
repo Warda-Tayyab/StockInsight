@@ -1,0 +1,145 @@
+.stock-alerts-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.alerts-actions {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.alerts-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.summary-icon {
+  font-size: 2rem;
+}
+
+.summary-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.summary-label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.alert-card {
+  border-left: 4px solid;
+  transition: var(--transition);
+}
+
+.alert-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.alert-critical {
+  border-left-color: var(--error);
+}
+
+.alert-high {
+  border-left-color: var(--warning);
+}
+
+.alert-medium {
+  border-left-color: var(--info);
+}
+
+.alert-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.alert-card-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.alert-card-info {
+  flex: 1;
+}
+
+.alert-card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 var(--spacing-xs) 0;
+  color: var(--text-primary);
+}
+
+.alert-card-time {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.alert-card-body {
+  margin-bottom: var(--spacing-md);
+}
+
+.alert-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.alert-details p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.alert-message {
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  font-style: italic;
+}
+
+.alert-card-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+}
+
+@media (max-width: 768px) {
+  .alerts-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .alerts-actions .btn {
+    width: 100%;
+  }
+  
+  .alert-card-actions {
+    flex-direction: column;
+  }
+  
+  .alert-card-actions .btn {
+    width: 100%;
+  }
+}

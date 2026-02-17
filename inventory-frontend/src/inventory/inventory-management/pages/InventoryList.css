@@ -1,0 +1,18 @@
+.inventory-list-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.inventory-filters {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: var(--spacing-lg);
+  align-items: end;
+}
+
+@media (max-width: 768px) {
+  .inventory-filters {
+    grid-template-columns: 1fr;
+  }
+}

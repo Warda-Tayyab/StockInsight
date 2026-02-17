@@ -1,0 +1,76 @@
+.batch-tracking-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.batch-tracking-content {
+  display: grid;
+  grid-template-columns: selectedBatch ? '1fr 400px' : '1fr';
+  gap: var(--spacing-lg);
+}
+
+.batch-list-section {
+  min-width: 0;
+}
+
+.table tbody tr {
+  cursor: pointer;
+}
+
+.table tbody tr.selected {
+  background-color: #e0e7ff;
+}
+
+.table tbody tr.selected:hover {
+  background-color: #c7d2fe;
+}
+
+.batch-details-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.batch-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.usage-history {
+  margin-top: var(--spacing-md);
+}
+
+@media (max-width: 1024px) {
+  .batch-tracking-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .batch-details-section {
+    order: -1;
+  }
+}
