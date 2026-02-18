@@ -1,0 +1,114 @@
+@import 'tailwindcss';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text',
+      'Segoe UI', sans-serif;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-slate-100;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400;
+  }
+}
+
+@layer components {
+  .sa-card {
+    @apply bg-white rounded-xl shadow-sm border border-slate-100;
+  }
+
+  .sa-card-header {
+    @apply flex items-center justify-between gap-2 border-b border-slate-100 px-4 py-3;
+  }
+
+  .sa-card-title {
+    @apply text-sm font-semibold text-slate-900;
+  }
+
+  .sa-card-subtitle {
+    @apply text-xs text-slate-500;
+  }
+
+  .sa-card-body {
+    @apply px-4 py-3;
+  }
+
+  .sa-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .sa-table {
+    @apply min-w-full text-left text-sm;
+  }
+
+  .sa-table thead {
+    @apply bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500;
+  }
+
+  .sa-table th {
+    @apply px-4 py-3;
+  }
+
+  .sa-table td {
+    @apply px-4 py-3 align-middle;
+  }
+
+  .sa-input {
+    @apply block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100;
+  }
+
+  .sa-select {
+    @apply block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100;
+  }
+
+  .sa-label {
+    @apply block text-xs font-medium text-slate-600 mb-1;
+  }
+
+  .sa-btn-primary {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-indigo-300;
+  }
+
+  .sa-btn-ghost {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg border border-transparent px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100;
+  }
+
+  .sa-btn-danger {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2;
+  }
+}
+
+@layer utilities {
+  .truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
