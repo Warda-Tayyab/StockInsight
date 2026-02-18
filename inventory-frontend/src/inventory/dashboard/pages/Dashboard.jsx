@@ -4,23 +4,22 @@ import StatsCard from '../components/StatsCard';
 import AlertsPanel from '../components/AlertsPanel';
 import RecentQueries from '../components/RecentQueries';
 import AnalyticsChart from '../components/AnalyticsChart';
-import './Dashboard.css';
 
 const Dashboard = () => {
   return (
-    <div data-testid="dashboard-page" className="dashboard-page">
-      <div className="dashboard-header">
+    <div data-testid="dashboard-page" className="flex flex-col gap-8">
+      <div className="flex items-start justify-between gap-6">
         <div>
-          <h1>Dashboard</h1>
-          <p className="dashboard-subtitle">Welcome back! Here's what's happening with your inventory.</p>
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2">Dashboard</h1>
+          <p className="text-gray-600 text-sm m-0">Welcome back! Here's what's happening with your inventory.</p>
         </div>
-        <div className="dashboard-actions">
-          <button className="btn btn-secondary">Export Report</button>
-          <button className="btn btn-primary">New Query</button>
+        <div className="flex gap-4">
+          <button className="bg-white text-gray-900 border border-gray-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">Export Report</button>
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">New Query</button>
         </div>
       </div>
 
-      <div className="dashboard-stats">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
           title="Total Products"
           value="1,234"
@@ -59,12 +58,12 @@ const Dashboard = () => {
         />
       </div>
 
-      <div className="dashboard-content">
-        <div className="dashboard-main">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
           <AnalyticsChart />
         </div>
         
-        <div className="dashboard-sidebar">
+        <div className="flex flex-col gap-6">
           <RecentQueries />
           <AlertsPanel />
         </div>

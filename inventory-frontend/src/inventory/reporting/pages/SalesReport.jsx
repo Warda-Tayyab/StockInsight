@@ -1,7 +1,6 @@
 /** @module inventory/reporting/pages/SalesReport */
 
 import { useState } from 'react';
-import './SalesReport.css';
 
 const SalesReport = () => {
   const [dateRange, setDateRange] = useState('month');
@@ -25,15 +24,15 @@ const SalesReport = () => {
   };
 
   return (
-    <div data-testid="sales-report-page" className="sales-report-page">
-      <div className="page-header">
+    <div data-testid="sales-report-page" className="flex flex-col gap-6">
+      <div className="flex items-start justify-between gap-6">
         <div>
-          <h1>Sales Report</h1>
-          <p className="page-subtitle">Track sales performance and trends</p>
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2">Sales Report</h1>
+          <p className="text-gray-600 text-sm m-0">Track sales performance and trends</p>
         </div>
-        <div className="report-actions">
+        <div className="flex gap-4">
           <select
-            className="form-select"
+            className="px-3.5 py-2 border border-gray-200 rounded-lg bg-white text-gray-900 text-sm transition-all focus:outline-none focus:border-blue-600"
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
           >
@@ -42,93 +41,85 @@ const SalesReport = () => {
             <option value="quarter">Last Quarter</option>
             <option value="year">Last Year</option>
           </select>
-          <button className="btn btn-secondary">Export PDF</button>
-          <button className="btn btn-primary">Export Excel</button>
+          <button className="bg-white text-gray-900 border border-gray-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">Export PDF</button>
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">Export Excel</button>
         </div>
       </div>
 
-      <div className="sales-summary">
-        <div className="summary-card card">
-          <div className="summary-card-icon" style={{ backgroundColor: '#d1fae5', color: 'var(--success)' }}>
-            💰
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white rounded-xl p-6 shadow-md flex items-center gap-4">
+          <div className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl bg-green-100 text-green-600 flex-shrink-0">💰</div>
           <div>
-            <span className="summary-card-label">Total Sales</span>
-            <span className="summary-card-value">${summary.totalSales.toLocaleString()}</span>
+            <span className="block text-xs text-gray-400 mb-1">Total Sales</span>
+            <span className="block text-2xl font-bold text-gray-900">${summary.totalSales.toLocaleString()}</span>
           </div>
         </div>
-        <div className="summary-card card">
-          <div className="summary-card-icon" style={{ backgroundColor: '#dbeafe', color: 'var(--info)' }}>
-            📦
-          </div>
+        <div className="bg-white rounded-xl p-6 shadow-md flex items-center gap-4">
+          <div className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl bg-blue-100 text-blue-600 flex-shrink-0">📦</div>
           <div>
-            <span className="summary-card-label">Total Orders</span>
-            <span className="summary-card-value">{summary.totalOrders}</span>
+            <span className="block text-xs text-gray-400 mb-1">Total Orders</span>
+            <span className="block text-2xl font-bold text-gray-900">{summary.totalOrders}</span>
           </div>
         </div>
-        <div className="summary-card card">
-          <div className="summary-card-icon" style={{ backgroundColor: '#e0e7ff', color: 'var(--primary)' }}>
-            📊
-          </div>
+        <div className="bg-white rounded-xl p-6 shadow-md flex items-center gap-4">
+          <div className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl bg-purple-100 text-purple-600 flex-shrink-0">📊</div>
           <div>
-            <span className="summary-card-label">Avg Order Value</span>
-            <span className="summary-card-value">${summary.avgOrderValue.toFixed(2)}</span>
+            <span className="block text-xs text-gray-400 mb-1">Avg Order Value</span>
+            <span className="block text-2xl font-bold text-gray-900">${summary.avgOrderValue.toFixed(2)}</span>
           </div>
         </div>
-        <div className="summary-card card">
-          <div className="summary-card-icon" style={{ backgroundColor: '#fef3c7', color: 'var(--warning)' }}>
-            📈
-          </div>
+        <div className="bg-white rounded-xl p-6 shadow-md flex items-center gap-4">
+          <div className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl bg-yellow-100 text-yellow-600 flex-shrink-0">📈</div>
           <div>
-            <span className="summary-card-label">Growth</span>
-            <span className="summary-card-value">{summary.growth}</span>
+            <span className="block text-xs text-gray-400 mb-1">Growth</span>
+            <span className="block text-2xl font-bold text-gray-900">{summary.growth}</span>
           </div>
         </div>
       </div>
 
-      <div className="sales-chart card">
-        <div className="card-header">
-          <h3 className="card-title">Sales Trend</h3>
+      <div className="bg-white rounded-xl p-6 shadow-md min-h-[400px]">
+        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-900 m-0">Sales Trend</h3>
         </div>
-        <div className="chart-container">
-          <div className="chart-bars">
+        <div className="my-6 py-6">
+          <div className="flex items-end justify-around h-[300px] gap-4">
             {salesData.map((item, index) => (
-              <div key={index} className="chart-bar-group">
-                <div className="chart-bar-wrapper">
+              <div key={index} className="flex-1 flex flex-col items-center gap-2">
+                <div className="w-full h-full flex items-end justify-center">
                   <div
-                    className="chart-bar chart-bar-sales"
+                    className="w-full min-h-[4px] rounded-t-lg bg-gradient-to-t from-green-500 to-green-400 transition-all cursor-pointer hover:opacity-80 hover:scale-y-105"
                     style={{ height: `${(item.sales / maxSales) * 100}%` }}
                     title={`$${item.sales.toLocaleString()}`}
                   ></div>
                 </div>
-                <span className="chart-label">{new Date(item.date).toLocaleDateString('en-US', { month: 'short' })}</span>
+                <span className="text-xs text-gray-600 font-medium">{new Date(item.date).toLocaleDateString('en-US', { month: 'short' })}</span>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="sales-table card">
-        <div className="card-header">
-          <h3 className="card-title">Detailed Sales Data</h3>
+      <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900 m-0">Detailed Sales Data</h3>
         </div>
-        <div className="table-container">
-          <table className="table">
-            <thead>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead className="bg-gray-50">
               <tr>
-                <th>Date</th>
-                <th>Sales</th>
-                <th>Orders</th>
-                <th>Avg Order Value</th>
+                <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Date</th>
+                <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Sales</th>
+                <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Orders</th>
+                <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Avg Order Value</th>
               </tr>
             </thead>
             <tbody>
               {salesData.map((item, index) => (
-                <tr key={index}>
-                  <td>{new Date(item.date).toLocaleDateString()}</td>
-                  <td>${item.sales.toLocaleString()}</td>
-                  <td>{item.orders}</td>
-                  <td>${item.avgOrder.toFixed(2)}</td>
+                <tr key={index} className="transition-colors hover:bg-gray-50">
+                  <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">{new Date(item.date).toLocaleDateString()}</td>
+                  <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">${item.sales.toLocaleString()}</td>
+                  <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">{item.orders}</td>
+                  <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">${item.avgOrder.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>

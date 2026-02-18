@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import InsightCard from '../components/InsightCard';
 import DataExplanation from '../components/DataExplanation';
-import './Insights.css';
 
 const Insights = () => {
   const [selectedInsight, setSelectedInsight] = useState(null);
@@ -76,17 +75,17 @@ const Insights = () => {
   ];
 
   return (
-    <div data-testid="insights-page" className="insights-page">
-      <div className="page-header">
+    <div data-testid="insights-page" className="flex flex-col gap-6">
+      <div className="flex items-start justify-between gap-6">
         <div>
-          <h1>Explainable Insights</h1>
-          <p className="page-subtitle">AI-powered insights with detailed explanations</p>
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2">Explainable Insights</h1>
+          <p className="text-gray-600 text-sm m-0">AI-powered insights with detailed explanations</p>
         </div>
-        <button className="btn btn-primary">Generate New Insights</button>
+        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">Generate New Insights</button>
       </div>
 
-      <div className="insights-content">
-        <div className="insights-list">
+      <div className={`grid gap-6 ${selectedInsight ? 'grid-cols-1 lg:grid-cols-[1fr_500px]' : 'grid-cols-1'}`}>
+        <div className="flex flex-col gap-6">
           {insights.map((insight) => (
             <InsightCard
               key={insight.id}
@@ -98,7 +97,7 @@ const Insights = () => {
         </div>
 
         {selectedInsight && (
-          <div className="insight-details">
+          <div className="lg:sticky lg:top-[calc(70px+2rem)] h-fit max-h-[calc(100vh-200px)] overflow-y-auto">
             <DataExplanation insight={selectedInsight} />
           </div>
         )}

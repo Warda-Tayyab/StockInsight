@@ -1,7 +1,6 @@
 /** @module inventory/inventory-management/components/InventoryForm */
 
 import { useState } from 'react';
-import './InventoryForm.css';
 
 const InventoryForm = ({ isEdit = false, initialData = {}, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -51,50 +50,56 @@ const InventoryForm = ({ isEdit = false, initialData = {}, onSubmit, onCancel })
   };
 
   return (
-    <form data-testid="inventory-form" onSubmit={handleSubmit} className="inventory-form">
-      <div className="form-grid">
-        <div className="form-group">
-          <label htmlFor="name" className="form-label">
-            Product Name <span className="required">*</span>
+    <form data-testid="inventory-form" onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="mb-6">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">
+            Product Name <span className="text-red-500">*</span>
           </label>
           <input
             id="name"
             name="name"
             type="text"
-            className={`form-input ${errors.name ? 'error' : ''}`}
+            className={`w-full px-3.5 py-2.5 border rounded-lg bg-white text-gray-900 text-sm transition-all focus:outline-none focus:ring-3 focus:ring-blue-100 ${
+              errors.name ? 'border-red-500' : 'border-gray-200 focus:border-blue-600'
+            }`}
             placeholder="Enter product name"
             value={formData.name}
             onChange={handleChange}
             required
           />
-          {errors.name && <span className="form-error">{errors.name}</span>}
+          {errors.name && <span className="text-red-500 text-xs mt-1 block">{errors.name}</span>}
         </div>
 
-        <div className="form-group">
-          <label htmlFor="sku" className="form-label">
-            SKU <span className="required">*</span>
+        <div className="mb-6">
+          <label htmlFor="sku" className="block text-sm font-medium text-gray-900 mb-2">
+            SKU <span className="text-red-500">*</span>
           </label>
           <input
             id="sku"
             name="sku"
             type="text"
-            className={`form-input ${errors.sku ? 'error' : ''}`}
+            className={`w-full px-3.5 py-2.5 border rounded-lg bg-white text-gray-900 text-sm transition-all focus:outline-none focus:ring-3 focus:ring-blue-100 ${
+              errors.sku ? 'border-red-500' : 'border-gray-200 focus:border-blue-600'
+            }`}
             placeholder="e.g., PROD-001"
             value={formData.sku}
             onChange={handleChange}
             required
           />
-          {errors.sku && <span className="form-error">{errors.sku}</span>}
+          {errors.sku && <span className="text-red-500 text-xs mt-1 block">{errors.sku}</span>}
         </div>
 
-        <div className="form-group">
-          <label htmlFor="category" className="form-label">
-            Category <span className="required">*</span>
+        <div className="mb-6">
+          <label htmlFor="category" className="block text-sm font-medium text-gray-900 mb-2">
+            Category <span className="text-red-500">*</span>
           </label>
           <select
             id="category"
             name="category"
-            className={`form-select ${errors.category ? 'error' : ''}`}
+            className={`w-full px-3.5 py-2.5 border rounded-lg bg-white text-gray-900 text-sm transition-all focus:outline-none focus:ring-3 focus:ring-blue-100 ${
+              errors.category ? 'border-red-500' : 'border-gray-200 focus:border-blue-600'
+            }`}
             value={formData.category}
             onChange={handleChange}
             required
@@ -106,12 +111,12 @@ const InventoryForm = ({ isEdit = false, initialData = {}, onSubmit, onCancel })
             <option value="Software">Software</option>
             <option value="Other">Other</option>
           </select>
-          {errors.category && <span className="form-error">{errors.category}</span>}
+          {errors.category && <span className="text-red-500 text-xs mt-1 block">{errors.category}</span>}
         </div>
 
-        <div className="form-group">
-          <label htmlFor="price" className="form-label">
-            Price ($) <span className="required">*</span>
+        <div className="mb-6">
+          <label htmlFor="price" className="block text-sm font-medium text-gray-900 mb-2">
+            Price ($) <span className="text-red-500">*</span>
           </label>
           <input
             id="price"
@@ -119,35 +124,39 @@ const InventoryForm = ({ isEdit = false, initialData = {}, onSubmit, onCancel })
             type="number"
             step="0.01"
             min="0"
-            className={`form-input ${errors.price ? 'error' : ''}`}
+            className={`w-full px-3.5 py-2.5 border rounded-lg bg-white text-gray-900 text-sm transition-all focus:outline-none focus:ring-3 focus:ring-blue-100 ${
+              errors.price ? 'border-red-500' : 'border-gray-200 focus:border-blue-600'
+            }`}
             placeholder="0.00"
             value={formData.price}
             onChange={handleChange}
             required
           />
-          {errors.price && <span className="form-error">{errors.price}</span>}
+          {errors.price && <span className="text-red-500 text-xs mt-1 block">{errors.price}</span>}
         </div>
 
-        <div className="form-group">
-          <label htmlFor="stock" className="form-label">
-            Stock Quantity <span className="required">*</span>
+        <div className="mb-6">
+          <label htmlFor="stock" className="block text-sm font-medium text-gray-900 mb-2">
+            Stock Quantity <span className="text-red-500">*</span>
           </label>
           <input
             id="stock"
             name="stock"
             type="number"
             min="0"
-            className={`form-input ${errors.stock ? 'error' : ''}`}
+            className={`w-full px-3.5 py-2.5 border rounded-lg bg-white text-gray-900 text-sm transition-all focus:outline-none focus:ring-3 focus:ring-blue-100 ${
+              errors.stock ? 'border-red-500' : 'border-gray-200 focus:border-blue-600'
+            }`}
             placeholder="0"
             value={formData.stock}
             onChange={handleChange}
             required
           />
-          {errors.stock && <span className="form-error">{errors.stock}</span>}
+          {errors.stock && <span className="text-red-500 text-xs mt-1 block">{errors.stock}</span>}
         </div>
 
-        <div className="form-group">
-          <label htmlFor="reorderPoint" className="form-label">
+        <div className="mb-6">
+          <label htmlFor="reorderPoint" className="block text-sm font-medium text-gray-900 mb-2">
             Reorder Point
           </label>
           <input
@@ -155,21 +164,21 @@ const InventoryForm = ({ isEdit = false, initialData = {}, onSubmit, onCancel })
             name="reorderPoint"
             type="number"
             min="0"
-            className="form-input"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg bg-white text-gray-900 text-sm transition-all focus:outline-none focus:border-blue-600 focus:ring-3 focus:ring-blue-100"
             placeholder="Minimum stock level"
             value={formData.reorderPoint}
             onChange={handleChange}
           />
         </div>
 
-        <div className="form-group form-group-full">
-          <label htmlFor="description" className="form-label">
+        <div className="mb-6 md:col-span-2">
+          <label htmlFor="description" className="block text-sm font-medium text-gray-900 mb-2">
             Description
           </label>
           <textarea
             id="description"
             name="description"
-            className="form-textarea"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg bg-white text-gray-900 text-sm transition-all focus:outline-none focus:border-blue-600 focus:ring-3 focus:ring-blue-100 resize-y min-h-[100px]"
             rows="4"
             placeholder="Enter product description..."
             value={formData.description}
@@ -178,11 +187,11 @@ const InventoryForm = ({ isEdit = false, initialData = {}, onSubmit, onCancel })
         </div>
       </div>
 
-      <div className="form-actions">
-        <button type="button" className="btn btn-secondary" onClick={onCancel}>
+      <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
+        <button type="button" className="bg-white text-gray-900 border border-gray-200 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors" onClick={onCancel}>
           Cancel
         </button>
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
           {isEdit ? 'Update Product' : 'Add Product'}
         </button>
       </div>

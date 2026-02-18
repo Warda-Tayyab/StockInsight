@@ -1,7 +1,6 @@
 /** @module shared/components/Sidebar */
 
 import { Link, useLocation } from 'react-router-dom';
-import './Sidebar.css';
 
 const Sidebar = ({ collapsed, onToggle }) => {
   const location = useLocation();
@@ -21,18 +20,19 @@ const Sidebar = ({ collapsed, onToggle }) => {
   return (
     <aside 
       data-testid="sidebar" 
-      className={`sidebar ${collapsed ? 'collapsed' : ''}`}
+      className={`fixed left-0 top-0 h-screen bg-white border-r border-gray-200 flex flex-col transition-all duration-300 z-50 shadow-sm ${collapsed ? 'w-20' : 'w-[260px]'}`}
     >
-      <div className="sidebar-header">
-        {!collapsed && (
-          <div className="sidebar-logo">
-            <h2>StockInsight</h2>
-            <span className="sidebar-subtitle">AI Inventory</span>
+      <div className="p-4 border-b border-gray-200 flex items-center justify-between min-h-[80px]">
+        {!collapsed ? (
+          <div className="flex flex-col">
+            <h2 className="text-xl font-bold text-blue-600">StockInsight</h2>
+            <span className="text-xs text-gray-500 font-medium">AI Inventory</span>
           </div>
+        ) : (
+          <div className="text-2xl text-center w-full">📊</div>
         )}
-        {collapsed && <div className="sidebar-logo-icon">📊</div>}
         <button 
-          className="sidebar-toggle" 
+          className="bg-gray-100 border border-gray-200 rounded-lg w-8 h-8 flex items-center justify-center cursor-pointer transition-colors text-gray-600 hover:bg-gray-200 hover:text-gray-900 text-base"
           onClick={onToggle}
           aria-label="Toggle sidebar"
         >
@@ -40,7 +40,7 @@ const Sidebar = ({ collapsed, onToggle }) => {
         </button>
       </div>
       
-      <nav className="sidebar-nav">
+      <nav className="flex-1 p-4 overflow-y-auto flex flex-col gap-1">
         {navItems.map(({ path, label, icon }) => {
           const isActive = location.pathname === path || 
             (path !== '/dashboard' && location.pathname.startsWith(path));
@@ -49,21 +49,25 @@ const Sidebar = ({ collapsed, onToggle }) => {
             <Link
               key={path}
               to={path}
-              className={`sidebar-item ${isActive ? 'active' : ''}`}
+              className={`flex items-center gap-4 p-4 rounded-lg transition-all duration-200 text-sm font-medium ${
+                isActive 
+                  ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md' 
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              } ${collapsed ? 'justify-center p-4' : ''}`}
               title={collapsed ? label : ''}
             >
-              <span className="sidebar-icon">{icon}</span>
-              {!collapsed && <span className="sidebar-label">{label}</span>}
+              <span className="text-xl flex-shrink-0">{icon}</span>
+              {!collapsed && <span>{label}</span>}
             </Link>
           );
         })}
       </nav>
       
       {!collapsed && (
-        <div className="sidebar-footer">
-          <div className="sidebar-footer-text">
-            <p className="text-xs text-secondary">AI-Driven Inventory</p>
-            <p className="text-xs text-tertiary">v1.0.0</p>
+        <div className="p-4 border-t border-gray-200">
+          <div className="text-center">
+            <p className="text-xs text-gray-500">AI-Driven Inventory</p>
+            <p className="text-xs text-gray-400">v1.0.0</p>
           </div>
         </div>
       )}

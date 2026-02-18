@@ -1,7 +1,5 @@
 /** @module inventory/dashboard/components/AlertsPanel */
 
-import './AlertsPanel.css';
-
 const AlertsPanel = () => {
   const alerts = [
     { id: 1, type: 'warning', message: 'Product "Widget A" is below reorder point', time: '5 min ago' },
@@ -20,27 +18,34 @@ const AlertsPanel = () => {
     }
   };
 
+  const alertBgClasses = {
+    warning: 'bg-yellow-50 border-l-yellow-500',
+    error: 'bg-red-50 border-l-red-500',
+    info: 'bg-blue-50 border-l-blue-500',
+    success: 'bg-green-50 border-l-green-500',
+  };
+
   return (
-    <div data-testid="alerts-panel" className="alerts-panel card">
-      <div className="card-header">
-        <h3 className="card-title">Recent Alerts</h3>
-        <span className="badge badge-error">4</span>
+    <div data-testid="alerts-panel" className="bg-white rounded-xl p-6 shadow-md max-h-[500px]">
+      <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-900 m-0">Recent Alerts</h3>
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">4</span>
       </div>
       
-      <div className="alerts-list">
+      <div className="flex flex-col gap-4 mb-6">
         {alerts.map((alert) => (
-          <div key={alert.id} className={`alert-item alert-${alert.type}`}>
-            <div className="alert-icon">{getAlertIcon(alert.type)}</div>
-            <div className="alert-content">
-              <p className="alert-message">{alert.message}</p>
-              <span className="alert-time">{alert.time}</span>
+          <div key={alert.id} className={`flex gap-4 p-4 rounded-lg border-l-4 ${alertBgClasses[alert.type] || alertBgClasses.info}`}>
+            <div className="text-xl flex-shrink-0">{getAlertIcon(alert.type)}</div>
+            <div className="flex-1 flex flex-col gap-1">
+              <p className="text-sm text-gray-900 m-0 leading-relaxed">{alert.message}</p>
+              <span className="text-xs text-gray-400">{alert.time}</span>
             </div>
           </div>
         ))}
       </div>
       
-      <div className="alerts-footer">
-        <a href="/stock-alerts" className="btn btn-secondary btn-sm" style={{ width: '100%' }}>
+      <div className="pt-4 border-t border-gray-200">
+        <a href="/stock-alerts" className="w-full bg-gray-100 text-gray-900 border border-gray-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors inline-block text-center">
           View All Alerts
         </a>
       </div>

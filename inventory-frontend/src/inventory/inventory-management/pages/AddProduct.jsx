@@ -2,7 +2,6 @@
 
 import { useNavigate } from 'react-router-dom';
 import InventoryForm from '../components/InventoryForm';
-import './AddProduct.css';
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -21,15 +20,15 @@ const AddProduct = () => {
   };
 
   return (
-    <div data-testid="add-product-page" className="add-product-page">
-      <div className="page-header">
+    <div data-testid="add-product-page" className="flex flex-col gap-6">
+      <div className="flex items-start justify-between gap-6">
         <div>
-          <h1>Add New Product</h1>
-          <p className="page-subtitle">Create a new product entry in your inventory</p>
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2">Add New Product</h1>
+          <p className="text-gray-600 text-sm m-0">Create a new product entry in your inventory</p>
         </div>
       </div>
 
-      <div className="card">
+      <div className="bg-white rounded-xl p-6 shadow-md">
         <InventoryForm
           isEdit={false}
           onSubmit={handleSubmit}

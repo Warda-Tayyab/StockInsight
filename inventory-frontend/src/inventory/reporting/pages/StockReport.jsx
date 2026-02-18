@@ -1,7 +1,6 @@
 /** @module inventory/reporting/pages/StockReport */
 
 import { useState } from 'react';
-import './StockReport.css';
 
 const StockReport = () => {
   const [filter, setFilter] = useState('all');
@@ -25,47 +24,49 @@ const StockReport = () => {
   };
 
   return (
-    <div data-testid="stock-report-page" className="stock-report-page">
-      <div className="page-header">
+    <div data-testid="stock-report-page" className="flex flex-col gap-6">
+      <div className="flex items-start justify-between gap-6">
         <div>
-          <h1>Stock Report</h1>
-          <p className="page-subtitle">Inventory levels and stock analysis</p>
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2">Stock Report</h1>
+          <p className="text-gray-600 text-sm m-0">Inventory levels and stock analysis</p>
         </div>
-        <div className="report-actions">
-          <select className="form-select">
+        <div className="flex gap-4">
+          <select className="px-3.5 py-2 border border-gray-200 rounded-lg bg-white text-gray-900 text-sm transition-all focus:outline-none focus:border-blue-600">
             <option>All Locations</option>
             <option>Warehouse A</option>
             <option>Warehouse B</option>
             <option>Warehouse C</option>
           </select>
-          <button className="btn btn-secondary">Export PDF</button>
-          <button className="btn btn-primary">Export Excel</button>
+          <button className="bg-white text-gray-900 border border-gray-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">Export PDF</button>
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">Export Excel</button>
         </div>
       </div>
 
-      <div className="stock-summary">
-        <div className="summary-card card">
-          <span className="summary-card-label">Total Products</span>
-          <span className="summary-card-value">{totals.totalProducts}</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white rounded-xl p-6 shadow-md flex flex-col gap-2 text-center">
+          <span className="text-sm text-gray-600">Total Products</span>
+          <span className="text-3xl font-bold text-gray-900">{totals.totalProducts}</span>
         </div>
-        <div className="summary-card card">
-          <span className="summary-card-label">Total Stock Units</span>
-          <span className="summary-card-value">{totals.totalStock.toLocaleString()}</span>
+        <div className="bg-white rounded-xl p-6 shadow-md flex flex-col gap-2 text-center">
+          <span className="text-sm text-gray-600">Total Stock Units</span>
+          <span className="text-3xl font-bold text-gray-900">{totals.totalStock.toLocaleString()}</span>
         </div>
-        <div className="summary-card card">
-          <span className="summary-card-label">Low Stock Items</span>
-          <span className="summary-card-value">{totals.totalLowStock}</span>
+        <div className="bg-white rounded-xl p-6 shadow-md flex flex-col gap-2 text-center">
+          <span className="text-sm text-gray-600">Low Stock Items</span>
+          <span className="text-3xl font-bold text-gray-900">{totals.totalLowStock}</span>
         </div>
-        <div className="summary-card card">
-          <span className="summary-card-label">Total Inventory Value</span>
-          <span className="summary-card-value">${totals.totalValue.toLocaleString()}</span>
+        <div className="bg-white rounded-xl p-6 shadow-md flex flex-col gap-2 text-center">
+          <span className="text-sm text-gray-600">Total Inventory Value</span>
+          <span className="text-3xl font-bold text-gray-900">${totals.totalValue.toLocaleString()}</span>
         </div>
       </div>
 
-      <div className="stock-filters card">
-        <div className="filter-tabs">
+      <div className="bg-white rounded-xl p-4 shadow-md">
+        <div className="flex gap-2 flex-wrap">
           <button
-            className={`filter-tab ${filter === 'all' ? 'active' : ''}`}
+            className={`px-6 py-2 border-none rounded-lg text-sm font-medium cursor-pointer transition-colors ${
+              filter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
+            }`}
             onClick={() => setFilter('all')}
           >
             All Categories
@@ -73,7 +74,9 @@ const StockReport = () => {
           {stockData.map((item) => (
             <button
               key={item.category}
-              className={`filter-tab ${filter === item.category.toLowerCase() ? 'active' : ''}`}
+              className={`px-6 py-2 border-none rounded-lg text-sm font-medium cursor-pointer transition-colors ${
+                filter === item.category.toLowerCase() ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
+              }`}
               onClick={() => setFilter(item.category.toLowerCase())}
             >
               {item.category}
@@ -82,45 +85,45 @@ const StockReport = () => {
         </div>
       </div>
 
-      <div className="stock-table card">
-        <div className="card-header">
-          <h3 className="card-title">Stock by Category</h3>
+      <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900 m-0">Stock by Category</h3>
         </div>
-        <div className="table-container">
-          <table className="table">
-            <thead>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead className="bg-gray-50">
               <tr>
-                <th>Category</th>
-                <th>Products</th>
-                <th>Total Stock</th>
-                <th>Low Stock</th>
-                <th>Inventory Value</th>
-                <th>Status</th>
+                <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Category</th>
+                <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Products</th>
+                <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Total Stock</th>
+                <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Low Stock</th>
+                <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Inventory Value</th>
+                <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Status</th>
               </tr>
             </thead>
             <tbody>
               {filteredData.map((item, index) => (
-                <tr key={index}>
-                  <td>
+                <tr key={index} className="transition-colors hover:bg-gray-50">
+                  <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">
                     <span className="font-semibold">{item.category}</span>
                   </td>
-                  <td>{item.totalProducts}</td>
-                  <td>{item.totalStock.toLocaleString()}</td>
-                  <td>
+                  <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">{item.totalProducts}</td>
+                  <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">{item.totalStock.toLocaleString()}</td>
+                  <td className="px-4 py-4 border-b border-gray-200 text-sm">
                     {item.lowStock > 0 ? (
-                      <span className="badge badge-warning">{item.lowStock}</span>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">{item.lowStock}</span>
                     ) : (
-                      <span className="badge badge-success">0</span>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">0</span>
                     )}
                   </td>
-                  <td>${item.value.toLocaleString()}</td>
-                  <td>
+                  <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">${item.value.toLocaleString()}</td>
+                  <td className="px-4 py-4 border-b border-gray-200 text-sm">
                     {item.lowStock === 0 ? (
-                      <span className="badge badge-success">Healthy</span>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Healthy</span>
                     ) : item.lowStock < 3 ? (
-                      <span className="badge badge-warning">Attention Needed</span>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Attention Needed</span>
                     ) : (
-                      <span className="badge badge-error">Critical</span>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Critical</span>
                     )}
                   </td>
                 </tr>

@@ -1,7 +1,5 @@
 /** @module inventory/stock-monitoring/pages/StockAlerts */
 
-import './StockAlerts.css';
-
 const StockAlerts = () => {
   const alerts = [
     { id: 1, type: 'low-stock', product: 'Widget A', currentStock: 12, reorderPoint: 20, priority: 'high', timestamp: '5 minutes ago' },
@@ -24,95 +22,105 @@ const StockAlerts = () => {
   const getPriorityBadge = (priority) => {
     switch (priority) {
       case 'critical':
-        return <span className="badge badge-error">Critical</span>;
+        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Critical</span>;
       case 'high':
-        return <span className="badge badge-warning">High</span>;
+        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">High</span>;
       case 'medium':
-        return <span className="badge badge-info">Medium</span>;
+        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Medium</span>;
       default:
-        return <span className="badge badge-primary">Low</span>;
+        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Low</span>;
     }
   };
 
+  const alertBgClasses = {
+    critical: 'bg-red-50 border-l-red-500',
+    high: 'bg-yellow-50 border-l-yellow-500',
+    medium: 'bg-blue-50 border-l-blue-500',
+  };
+
   return (
-    <div data-testid="stock-alerts-page" className="stock-alerts-page">
-      <div className="page-header">
+    <div data-testid="stock-alerts-page" className="flex flex-col gap-6">
+      <div className="flex items-start justify-between gap-6">
         <div>
-          <h1>Stock Alerts</h1>
-          <p className="page-subtitle">Monitor and manage inventory alerts</p>
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2">Stock Alerts</h1>
+          <p className="text-gray-600 text-sm m-0">Monitor and manage inventory alerts</p>
         </div>
-        <div className="alerts-actions">
-          <button className="btn btn-secondary">Mark All Read</button>
-          <button className="btn btn-primary">Configure Alerts</button>
-        </div>
-      </div>
-
-      <div className="alerts-summary">
-        <div className="card">
-          <div className="summary-item">
-            <span className="summary-icon">🚨</span>
-            <div>
-              <span className="summary-value">1</span>
-              <span className="summary-label">Critical</span>
-            </div>
-          </div>
-          <div className="summary-item">
-            <span className="summary-icon">⚠️</span>
-            <div>
-              <span className="summary-value">3</span>
-              <span className="summary-label">High Priority</span>
-            </div>
-          </div>
-          <div className="summary-item">
-            <span className="summary-icon">📢</span>
-            <div>
-              <span className="summary-value">2</span>
-              <span className="summary-label">Medium Priority</span>
-            </div>
-          </div>
+        <div className="flex gap-4">
+          <button className="bg-white text-gray-900 border border-gray-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">Mark All Read</button>
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">Configure Alerts</button>
         </div>
       </div>
 
-      <div className="alerts-list">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-xl p-6 shadow-md">
+          <div className="flex items-center gap-4">
+            <span className="text-3xl">🚨</span>
+            <div>
+              <span className="block text-2xl font-bold text-gray-900">1</span>
+              <span className="block text-sm text-gray-600">Critical</span>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-xl p-6 shadow-md">
+          <div className="flex items-center gap-4">
+            <span className="text-3xl">⚠️</span>
+            <div>
+              <span className="block text-2xl font-bold text-gray-900">3</span>
+              <span className="block text-sm text-gray-600">High Priority</span>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-xl p-6 shadow-md">
+          <div className="flex items-center gap-4">
+            <span className="text-3xl">📢</span>
+            <div>
+              <span className="block text-2xl font-bold text-gray-900">2</span>
+              <span className="block text-sm text-gray-600">Medium Priority</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-6">
         {alerts.map((alert) => (
-          <div key={alert.id} className={`alert-card card alert-${alert.priority}`}>
-            <div className="alert-card-header">
-              <div className="alert-card-icon">{getAlertIcon(alert.type)}</div>
-              <div className="alert-card-info">
-                <h3 className="alert-card-title">{alert.product}</h3>
-                <span className="alert-card-time">{alert.timestamp}</span>
+          <div key={alert.id} className={`bg-white rounded-xl p-6 shadow-md border-l-4 transition-all hover:shadow-lg hover:-translate-y-0.5 ${alertBgClasses[alert.priority] || 'bg-gray-50 border-l-gray-500'}`}>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="text-2xl flex-shrink-0">{getAlertIcon(alert.type)}</div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900 m-0 mb-1">{alert.product}</h3>
+                <span className="text-xs text-gray-400">{alert.timestamp}</span>
               </div>
               {getPriorityBadge(alert.priority)}
             </div>
             
-            <div className="alert-card-body">
+            <div className="mb-4">
               {alert.type === 'low-stock' && (
-                <div className="alert-details">
-                  <p>Current stock: <strong>{alert.currentStock} units</strong></p>
-                  <p>Reorder point: <strong>{alert.reorderPoint} units</strong></p>
-                  <p className="alert-message">Stock is below the reorder point. Consider restocking soon.</p>
+                <div className="flex flex-col gap-2">
+                  <p className="m-0 text-sm text-gray-900">Current stock: <strong>{alert.currentStock} units</strong></p>
+                  <p className="m-0 text-sm text-gray-900">Reorder point: <strong>{alert.reorderPoint} units</strong></p>
+                  <p className="m-0 text-sm text-gray-600 italic mt-2 p-2 bg-gray-100 rounded-lg">Stock is below the reorder point. Consider restocking soon.</p>
                 </div>
               )}
               
               {alert.type === 'expiring' && (
-                <div className="alert-details">
-                  <p>Batch: <strong>{alert.batch}</strong></p>
-                  <p>Expires in: <strong>{alert.daysUntilExpiry} days</strong></p>
-                  <p className="alert-message">This batch will expire soon. Consider using it first or discounting.</p>
+                <div className="flex flex-col gap-2">
+                  <p className="m-0 text-sm text-gray-900">Batch: <strong>{alert.batch}</strong></p>
+                  <p className="m-0 text-sm text-gray-900">Expires in: <strong>{alert.daysUntilExpiry} days</strong></p>
+                  <p className="m-0 text-sm text-gray-600 italic mt-2 p-2 bg-gray-100 rounded-lg">This batch will expire soon. Consider using it first or discounting.</p>
                 </div>
               )}
               
               {alert.type === 'out-of-stock' && (
-                <div className="alert-details">
-                  <p>Current stock: <strong>0 units</strong></p>
-                  <p className="alert-message">Product is out of stock. Immediate action required.</p>
+                <div className="flex flex-col gap-2">
+                  <p className="m-0 text-sm text-gray-900">Current stock: <strong>0 units</strong></p>
+                  <p className="m-0 text-sm text-gray-600 italic mt-2 p-2 bg-gray-100 rounded-lg">Product is out of stock. Immediate action required.</p>
                 </div>
               )}
             </div>
             
-            <div className="alert-card-actions">
-              <button className="btn btn-secondary btn-sm">View Product</button>
-              <button className="btn btn-primary btn-sm">Take Action</button>
+            <div className="flex gap-4 pt-4 border-t border-gray-200">
+              <button className="bg-white text-gray-900 border border-gray-200 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50 transition-colors">View Product</button>
+              <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">Take Action</button>
             </div>
           </div>
         ))}

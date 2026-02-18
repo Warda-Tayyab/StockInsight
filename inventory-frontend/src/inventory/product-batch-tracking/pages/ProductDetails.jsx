@@ -1,7 +1,6 @@
 /** @module inventory/product-batch-tracking/pages/ProductDetails */
 
 import { useParams, Link } from 'react-router-dom';
-import './ProductDetails.css';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -29,87 +28,87 @@ const ProductDetails = () => {
   };
 
   return (
-    <div data-testid="product-details-page" className="product-details-page">
-      <div className="page-header">
+    <div data-testid="product-details-page" className="flex flex-col gap-6">
+      <div className="flex items-start justify-between gap-6">
         <div>
-          <Link to="/products" className="back-link">← Back to Products</Link>
-          <h1>{product.name}</h1>
-          <p className="page-subtitle">Product Details & Tracking</p>
+          <Link to="/products" className="text-blue-600 text-sm mb-2 inline-block transition-colors hover:text-blue-700 hover:underline">← Back to Products</Link>
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2">{product.name}</h1>
+          <p className="text-gray-600 text-sm m-0">Product Details & Tracking</p>
         </div>
-        <div className="product-actions">
-          <Link to={`/products/edit/${id}`} className="btn btn-secondary">
+        <div className="flex gap-4">
+          <Link to={`/products/edit/${id}`} className="bg-white text-gray-900 border border-gray-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
             Edit Product
           </Link>
-          <button className="btn btn-primary">Add Stock</button>
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">Add Stock</button>
         </div>
       </div>
 
-      <div className="product-details-grid">
-        <div className="product-info card">
-          <div className="card-header">
-            <h3 className="card-title">Product Information</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl p-6 shadow-md lg:col-span-2">
+          <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-900 m-0">Product Information</h3>
           </div>
-          <div className="info-grid">
-            <div className="info-item">
-              <span className="info-label">SKU</span>
-              <span className="info-value">{product.sku}</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-gray-400 uppercase tracking-wide">SKU</span>
+              <span className="text-sm text-gray-900 font-medium">{product.sku}</span>
             </div>
-            <div className="info-item">
-              <span className="info-label">Category</span>
-              <span className="info-value">
-                <span className="badge badge-primary">{product.category}</span>
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-gray-400 uppercase tracking-wide">Category</span>
+              <span className="text-sm">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{product.category}</span>
               </span>
             </div>
-            <div className="info-item">
-              <span className="info-label">Price</span>
-              <span className="info-value">${product.price.toFixed(2)}</span>
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-gray-400 uppercase tracking-wide">Price</span>
+              <span className="text-sm text-gray-900 font-medium">${product.price.toFixed(2)}</span>
             </div>
-            <div className="info-item">
-              <span className="info-label">Current Stock</span>
-              <span className="info-value">{product.stock} units</span>
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-gray-400 uppercase tracking-wide">Current Stock</span>
+              <span className="text-sm text-gray-900 font-medium">{product.stock} units</span>
             </div>
-            <div className="info-item">
-              <span className="info-label">Reorder Point</span>
-              <span className="info-value">{product.reorderPoint} units</span>
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-gray-400 uppercase tracking-wide">Reorder Point</span>
+              <span className="text-sm text-gray-900 font-medium">{product.reorderPoint} units</span>
             </div>
-            <div className="info-item">
-              <span className="info-label">Status</span>
-              <span className="info-value">
-                <span className="badge badge-success">In Stock</span>
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-gray-400 uppercase tracking-wide">Status</span>
+              <span className="text-sm">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">In Stock</span>
               </span>
             </div>
-            <div className="info-item info-item-full">
-              <span className="info-label">Description</span>
-              <span className="info-value">{product.description}</span>
+            <div className="flex flex-col gap-1 md:col-span-2">
+              <span className="text-xs text-gray-400 uppercase tracking-wide">Description</span>
+              <span className="text-sm text-gray-900 font-medium">{product.description}</span>
             </div>
           </div>
         </div>
 
-        <div className="product-batches card">
-          <div className="card-header">
-            <h3 className="card-title">Batches</h3>
-            <span className="badge badge-primary">{product.batches.length}</span>
+        <div className="bg-white rounded-xl p-6 shadow-md">
+          <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-900 m-0">Batches</h3>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{product.batches.length}</span>
           </div>
-          <div className="table-container">
-            <table className="table">
-              <thead>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead className="bg-gray-50">
                 <tr>
-                  <th>Batch Number</th>
-                  <th>Quantity</th>
-                  <th>Received</th>
-                  <th>Expiry</th>
-                  <th>Status</th>
+                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Batch Number</th>
+                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Quantity</th>
+                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Received</th>
+                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Expiry</th>
+                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {product.batches.map((batch, idx) => (
-                  <tr key={idx}>
-                    <td>{batch.batchNumber}</td>
-                    <td>{batch.quantity}</td>
-                    <td>{batch.receivedDate}</td>
-                    <td>{batch.expiryDate}</td>
-                    <td>
-                      <span className="badge badge-success">Active</span>
+                  <tr key={idx} className="transition-colors hover:bg-gray-50">
+                    <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">{batch.batchNumber}</td>
+                    <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">{batch.quantity}</td>
+                    <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">{batch.receivedDate}</td>
+                    <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">{batch.expiryDate}</td>
+                    <td className="px-4 py-4 border-b border-gray-200 text-sm">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
                     </td>
                   </tr>
                 ))}
@@ -118,23 +117,23 @@ const ProductDetails = () => {
           </div>
         </div>
 
-        <div className="product-activity card">
-          <div className="card-header">
-            <h3 className="card-title">Recent Activity</h3>
+        <div className="bg-white rounded-xl p-6 shadow-md">
+          <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-900 m-0">Recent Activity</h3>
           </div>
-          <div className="activity-list">
+          <div className="flex flex-col gap-4">
             {product.recentActivity.map((activity, idx) => (
-              <div key={idx} className="activity-item">
-                <div className="activity-icon">
+              <div key={idx} className="flex items-center gap-4 p-4 rounded-lg transition-colors hover:bg-gray-50">
+                <div className="text-2xl flex-shrink-0">
                   {activity.type === 'sale' ? '💰' : '📦'}
                 </div>
-                <div className="activity-content">
-                  <p className="activity-text">
+                <div className="flex-1 flex flex-col gap-1">
+                  <p className="text-sm text-gray-900 m-0">
                     {activity.type === 'sale' ? 'Sold' : 'Received'} {activity.quantity} units
                   </p>
-                  <span className="activity-reference">{activity.reference}</span>
+                  <span className="text-xs text-gray-400">{activity.reference}</span>
                 </div>
-                <span className="activity-date">{activity.date}</span>
+                <span className="text-xs text-gray-400">{activity.date}</span>
               </div>
             ))}
           </div>

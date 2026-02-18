@@ -1,7 +1,6 @@
 /** @module inventory/product-batch-tracking/pages/BatchTracking */
 
 import { useState } from 'react';
-import './BatchTracking.css';
 
 const BatchTracking = () => {
   const [selectedBatch, setSelectedBatch] = useState(null);
@@ -25,155 +24,156 @@ const BatchTracking = () => {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'active':
-        return <span className="badge badge-success">Active</span>;
+        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>;
       case 'expiring':
-        return <span className="badge badge-warning">Expiring Soon</span>;
+        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Expiring Soon</span>;
       case 'expired':
-        return <span className="badge badge-error">Expired</span>;
+        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Expired</span>;
       default:
-        return <span className="badge badge-info">{status}</span>;
+        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{status}</span>;
     }
   };
 
   return (
-    <div data-testid="batch-tracking-page" className="batch-tracking-page">
-      <div className="page-header">
+    <div data-testid="batch-tracking-page" className="flex flex-col gap-6">
+      <div className="flex items-start justify-between gap-6">
         <div>
-          <h1>Batch Tracking</h1>
-          <p className="page-subtitle">Track product batches and usage history</p>
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2">Batch Tracking</h1>
+          <p className="text-gray-600 text-sm m-0">Track product batches and usage history</p>
         </div>
       </div>
 
-      <div className="batch-tracking-content">
-        <div className="batch-list-section">
-          <div className="card">
-            <div className="card-header">
-              <h3 className="card-title">Product Batches</h3>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Search batches..."
-                style={{ maxWidth: '300px' }}
-              />
-            </div>
-            
-            <div className="table-container">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Batch Number</th>
-                    <th>Product</th>
-                    <th>Quantity</th>
-                    <th>Received Date</th>
-                    <th>Expiry Date</th>
-                    <th>Status</th>
-                    <th>Location</th>
+      <div className={`grid gap-6 ${selectedBatch ? 'grid-cols-1 lg:grid-cols-[1fr_400px]' : 'grid-cols-1'}`}>
+        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-900 m-0">Product Batches</h3>
+            <input
+              type="text"
+              className="max-w-[300px] px-3.5 py-2 border border-gray-200 rounded-lg bg-white text-gray-900 text-sm transition-all focus:outline-none focus:border-blue-600 focus:ring-3 focus:ring-blue-100"
+              placeholder="Search batches..."
+            />
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Batch Number</th>
+                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Product</th>
+                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Quantity</th>
+                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Received Date</th>
+                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Expiry Date</th>
+                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Status</th>
+                  <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Location</th>
+                </tr>
+              </thead>
+              <tbody>
+                {batches.map((batch) => (
+                  <tr
+                    key={batch.id}
+                    className={`transition-colors cursor-pointer ${
+                      selectedBatch?.id === batch.id ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-gray-50'
+                    }`}
+                    onClick={() => setSelectedBatch(batch)}
+                  >
+                    <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">
+                      <span className="font-semibold">{batch.batchNumber}</span>
+                    </td>
+                    <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">{batch.product}</td>
+                    <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">{batch.quantity}</td>
+                    <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">{batch.receivedDate}</td>
+                    <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">{batch.expiryDate}</td>
+                    <td className="px-4 py-4 border-b border-gray-200 text-sm">{getStatusBadge(batch.status)}</td>
+                    <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">{batch.location}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {batches.map((batch) => (
-                    <tr
-                      key={batch.id}
-                      className={selectedBatch?.id === batch.id ? 'selected' : ''}
-                      onClick={() => setSelectedBatch(batch)}
-                    >
-                      <td>
-                        <span className="font-semibold">{batch.batchNumber}</span>
-                      </td>
-                      <td>{batch.product}</td>
-                      <td>{batch.quantity}</td>
-                      <td>{batch.receivedDate}</td>
-                      <td>{batch.expiryDate}</td>
-                      <td>{getStatusBadge(batch.status)}</td>
-                      <td>{batch.location}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
         {selectedBatch && (
-          <div className="batch-details-section">
-            <div className="card">
-              <div className="card-header">
-                <h3 className="card-title">Batch Details</h3>
+          <div className="flex flex-col gap-6">
+            <div className="bg-white rounded-xl p-6 shadow-md">
+              <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900 m-0">Batch Details</h3>
                 <button
-                  className="btn btn-secondary btn-sm"
+                  className="bg-white text-gray-900 border border-gray-200 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-50 transition-colors"
                   onClick={() => setSelectedBatch(null)}
                 >
                   Close
                 </button>
               </div>
               
-              <div className="batch-details">
-                <div className="detail-item">
-                  <span className="detail-label">Batch Number:</span>
-                  <span className="detail-value">{selectedBatch.batchNumber}</span>
+              <div className="flex flex-col gap-4">
+                <div className="flex justify-between py-2 border-b border-gray-200">
+                  <span className="text-sm text-gray-600 font-medium">Batch Number:</span>
+                  <span className="text-sm text-gray-900 font-semibold">{selectedBatch.batchNumber}</span>
                 </div>
-                <div className="detail-item">
-                  <span className="detail-label">Product:</span>
-                  <span className="detail-value">{selectedBatch.product}</span>
+                <div className="flex justify-between py-2 border-b border-gray-200">
+                  <span className="text-sm text-gray-600 font-medium">Product:</span>
+                  <span className="text-sm text-gray-900 font-semibold">{selectedBatch.product}</span>
                 </div>
-                <div className="detail-item">
-                  <span className="detail-label">Quantity:</span>
-                  <span className="detail-value">{selectedBatch.quantity} units</span>
+                <div className="flex justify-between py-2 border-b border-gray-200">
+                  <span className="text-sm text-gray-600 font-medium">Quantity:</span>
+                  <span className="text-sm text-gray-900 font-semibold">{selectedBatch.quantity} units</span>
                 </div>
-                <div className="detail-item">
-                  <span className="detail-label">Received Date:</span>
-                  <span className="detail-value">{selectedBatch.receivedDate}</span>
+                <div className="flex justify-between py-2 border-b border-gray-200">
+                  <span className="text-sm text-gray-600 font-medium">Received Date:</span>
+                  <span className="text-sm text-gray-900 font-semibold">{selectedBatch.receivedDate}</span>
                 </div>
-                <div className="detail-item">
-                  <span className="detail-label">Expiry Date:</span>
-                  <span className="detail-value">{selectedBatch.expiryDate}</span>
+                <div className="flex justify-between py-2 border-b border-gray-200">
+                  <span className="text-sm text-gray-600 font-medium">Expiry Date:</span>
+                  <span className="text-sm text-gray-900 font-semibold">{selectedBatch.expiryDate}</span>
                 </div>
-                <div className="detail-item">
-                  <span className="detail-label">Status:</span>
-                  <span className="detail-value">{getStatusBadge(selectedBatch.status)}</span>
+                <div className="flex justify-between py-2 border-b border-gray-200">
+                  <span className="text-sm text-gray-600 font-medium">Status:</span>
+                  <span className="text-sm">{getStatusBadge(selectedBatch.status)}</span>
                 </div>
-                <div className="detail-item">
-                  <span className="detail-label">Location:</span>
-                  <span className="detail-value">{selectedBatch.location}</span>
+                <div className="flex justify-between py-2">
+                  <span className="text-sm text-gray-600 font-medium">Location:</span>
+                  <span className="text-sm text-gray-900 font-semibold">{selectedBatch.location}</span>
                 </div>
               </div>
             </div>
 
-            <div className="card">
-              <div className="card-header">
-                <h3 className="card-title">Usage History</h3>
+            <div className="bg-white rounded-xl p-6 shadow-md">
+              <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900 m-0">Usage History</h3>
               </div>
               
-              <div className="usage-history">
+              <div className="mt-4">
                 {usageHistory.length > 0 ? (
-                  <div className="table-container">
-                    <table className="table">
-                      <thead>
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                      <thead className="bg-gray-50">
                         <tr>
-                          <th>Date</th>
-                          <th>Quantity</th>
-                          <th>Type</th>
-                          <th>Reference</th>
+                          <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Date</th>
+                          <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Quantity</th>
+                          <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Type</th>
+                          <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Reference</th>
                         </tr>
                       </thead>
                       <tbody>
                         {usageHistory.map((usage) => (
-                          <tr key={usage.id}>
-                            <td>{usage.date}</td>
-                            <td>{usage.quantity}</td>
-                            <td>
-                              <span className={`badge ${usage.type === 'sale' ? 'badge-success' : 'badge-info'}`}>
+                          <tr key={usage.id} className="transition-colors hover:bg-gray-50">
+                            <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">{usage.date}</td>
+                            <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">{usage.quantity}</td>
+                            <td className="px-4 py-4 border-b border-gray-200 text-sm">
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                usage.type === 'sale' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                              }`}>
                                 {usage.type}
                               </span>
                             </td>
-                            <td>{usage.reference}</td>
+                            <td className="px-4 py-4 border-b border-gray-200 text-sm text-gray-900">{usage.reference}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
                 ) : (
-                  <p className="text-center text-secondary">No usage history available</p>
+                  <p className="text-center text-gray-600">No usage history available</p>
                 )}
               </div>
             </div>
