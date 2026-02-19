@@ -13,24 +13,85 @@ const Products = () => {
   const [loading, setLoading] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [filterOpen, setFilterOpen] = useState(false);
+
+const [filters, setFilters] = useState({
+  category: "",
+  status: "",
+  lowStock: false,
+  minPrice: "",
+  maxPrice: "",
+  sortBy: "",
+});
 
   const itemsPerPage = 10;
   const token = localStorage.getItem("token");
 
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:5000/api/categories", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setCategories(response.data); // assuming response.data is an array of categories
+      } catch (error) {
+        console.error("Error fetching categories:", error.response?.data || error.message);
+      }
+    };
+  
+    fetchCategories();
+  }, []);
   // ✅ FETCH PRODUCTS FROM BACKEND
   const fetchProducts = async () => {
     try {
       setLoading(true);
-
+  
+      let query = "";
+  
+      // 🔍 search
+      if (searchTerm) {
+        query += `search=${searchTerm}&`;
+      }
+  
+      // 🎯 category
+      if (filters.category) {
+        query += `categoryId=${filters.category}&`;
+      }
+  
+      // 📌 status
+      if (filters.status) {
+        query += `status=${filters.status}&`;
+      }
+  
+      // ⚠ low stock
+      if (filters.lowStock) {
+        query += `lowStock=true&`;
+      }
+  
+      // 💰 price
+      if (filters.minPrice) {
+        query += `minPrice=${filters.minPrice}&`;
+      }
+      if (filters.sortBy) {
+        query += `sortBy=${filters.sortBy}&`;
+      }
+      
+      if (filters.maxPrice) {
+        query += `maxPrice=${filters.maxPrice}&`;
+      }
+  
       const response = await axios.get(
-        `http://localhost:5000/api/products?search=${searchTerm}`,
+        `http://localhost:5000/api/products?${query}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-
+  
       setProducts(response.data);
     } catch (error) {
       console.error(
@@ -41,11 +102,11 @@ const Products = () => {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     fetchProducts();
   }, [searchTerm]);
-
+  
   // ✅ Pagination Logic
   const totalPages = Math.ceil(products.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -154,30 +215,174 @@ const Products = () => {
           ➕ Add Product
         </Link>
       </div>
+      {/* SEARCH + FILTER */}
+<div className="bg-white rounded-xl p-6 shadow-md">
+  <div className="flex flex-col gap-2">
+    <label className="text-sm font-medium text-gray-900">
+      Search Products
+    </label>
 
-      {/* SEARCH */}
-      <div className="bg-white rounded-xl p-6 shadow-md">
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-900">
-            Search Products
-          </label>
+    <div className="flex items-center gap-3 relative">
+      {/* SEARCH INPUT */}
+      <div className="relative w-full">
+        <span className="absolute inset-y-0 left-4 flex items-center text-gray-400">🔍</span>
 
-          <div className="relative flex items-center">
-            <span className="absolute left-4 text-gray-400">🔍</span>
-
-            <input
-              type="text"
-              placeholder="Search by name or SKU..."
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-            />
-          </div>
-        </div>
+        <input
+          type="text"
+          placeholder="Search by name or SKU..."
+          className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1);
+          }}
+        />
       </div>
+
+      {/* FILTER BUTTON */}
+      <button
+  onClick={() => setFilterOpen(!filterOpen)}
+  className="border border-gray-200 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition flex items-center"
+>
+  <span className="mr-2">⚙</span>
+  Filters
+</button>
+    </div>
+  </div>
+
+  {/* FILTER PANEL */}
+  {filterOpen && (
+    <div className="mt-6 border-t pt-6 grid md:grid-cols-3 gap-4">
+      {/* CATEGORY */}
+      <div className="flex flex-col gap-1">
+        <label className="text-xs font-medium text-gray-600">
+          Category
+        </label>
+        <select
+  className="border border-gray-200 rounded-lg px-3 py-2 text-sm"
+  value={filters.category}
+  onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+>
+  <option value="">All Categories</option>
+  {categories.map((cat) => (
+    <option key={cat._id} value={cat._id}>{cat.name}</option>
+  ))}
+</select>
+      </div>
+
+      {/* STATUS */}
+      <div className="flex flex-col gap-1">
+        <label className="text-xs font-medium text-gray-600">
+          Status
+        </label>
+        <select
+          className="border border-gray-200 rounded-lg px-3 py-2 text-sm"
+          value={filters.status}
+          onChange={(e) =>
+            setFilters({ ...filters, status: e.target.value })
+          }
+        >
+          <option value="">All</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="out_of_stock">Out of Stock</option>
+        </select>
+      </div>
+     
+
+      {/* LOW STOCK */}
+      <div className="flex items-center gap-2 mt-6">
+        <input
+          type="checkbox"
+          checked={filters.lowStock}
+          onChange={(e) =>
+            setFilters({ ...filters, lowStock: e.target.checked })
+          }
+        />
+        <label className="text-sm text-gray-700">Low Stock</label>
+      </div>
+
+      {/* PRICE RANGE */}
+      <div className="flex flex-col gap-1">
+        <label className="text-xs font-medium text-gray-600">
+          Min Price
+        </label>
+        <input
+          type="number"
+          placeholder="0"
+          className="border border-gray-200 rounded-lg px-3 py-2 text-sm"
+          value={filters.minPrice}
+          onChange={(e) =>
+            setFilters({ ...filters, minPrice: e.target.value })
+          }
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label className="text-xs font-medium text-gray-600">
+          Max Price
+        </label>
+        <input
+          type="number"
+          placeholder="100000"
+          className="border border-gray-200 rounded-lg px-3 py-2 text-sm"
+          value={filters.maxPrice}
+          onChange={(e) =>
+            setFilters({ ...filters, maxPrice: e.target.value })
+          }
+        />
+      </div>
+     {/*SORT By*/}
+     <div className="flex flex-col gap-1">
+  <label className="text-xs font-medium text-gray-600">Sort By</label>
+  <select
+    className="border border-gray-200 rounded-lg px-3 py-2 text-sm"
+    value={filters.sortBy}
+    onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })}
+  >
+    <option value="">Default</option>
+    <option value="newest">New → Old</option>
+    <option value="oldest">Old → New</option>
+    <option value="lowToHigh">Price: Low → High</option>
+    <option value="highToLow">Price: High → Low</option>
+  </select>
+</div>
+      {/* ACTION BUTTONS */}
+      <div className="flex items-end gap-3">
+      <button
+  onClick={() => {
+    fetchProducts();
+    setFilterOpen(false);
+    
+  }}
+  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm"
+>
+  Apply
+</button>
+
+<button
+  className="border px-4 py-2 rounded-lg text-sm"
+  onClick={() => {
+    setFilters({
+      category: "",
+      status: "",
+      lowStock: false,
+      minPrice: "",
+      maxPrice: "",
+    });
+    setSearchTerm("");
+    fetchProducts();
+  }}
+>
+  Reset
+</button>
+
+   
+
+      </div>
+    </div>
+  )}
+</div>
 
       {/* TABLE */}
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
