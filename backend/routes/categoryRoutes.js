@@ -42,7 +42,7 @@ router.post(
 router.get(
   '/',
   authenticate,
-  authorize({ roles: ['owner'], requireTenantActive: true }),
+  authorize({ roles: ['owner','Admin'], requireTenantActive: true }),
   async (req, res) => {
     try {
       const tenantId = req.auth.tenantId;

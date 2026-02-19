@@ -1,202 +1,218 @@
-/** @module inventory/inventory-management/components/InventoryForm */
-
-import { useState } from 'react';
+import { useState, useEffect } from "react";
+import jwt_decode from "jwt-decode";
+import CategoryModal from "./CategoryModal";
 
 const InventoryForm = ({ isEdit = false, initialData = {}, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
-    name: initialData.name || '',
-    sku: initialData.sku || '',
-    category: initialData.category || '',
-    description: initialData.description || '',
-    price: initialData.price || '',
-    stock: initialData.stock || '',
-    reorderPoint: initialData.reorderPoint || '',
-    unit: initialData.unit || 'units',
-    ...initialData,
+    name: initialData.name || "",
+    sku: initialData.sku || "",
+    categoryId: initialData.categoryId || "",
+    description: initialData.description || "",
+    costPrice: initialData.costPrice || "",
+    sellingPrice: initialData.sellingPrice || "",
+    quantity: initialData.quantity || "",
+    reorderLevel: initialData.reorderLevel || "",
+    unit: initialData.unit || "pcs",
+    supplierName: initialData.supplierName || "",
+    status: initialData.status || "active",
+    image: initialData.image || ""
   });
 
   const [errors, setErrors] = useState({});
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [catLoading, setCatLoading] = useState(true);
+  const [catError, setCatError] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-    if (errors[name]) {
-      setErrors({
-        ...errors,
-        [name]: '',
+  // 🔹 Category modal state
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+
+  // 🔥 Fetch categories from backend
+  const fetchCategories = async () => {
+    setCatLoading(true);
+    setCatError("");
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Token not found");
+
+      const decoded = jwt_decode(token);
+      const tenantId = decoded.tenantId;
+
+      const res = await fetch(`http://localhost:5000/api/categories?tenantId=${tenantId}`, {
+        headers: { Authorization: `Bearer ${token}` }
       });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to fetch categories");
+
+      setCategories(data);
+    } catch (err) {
+      console.error("Categories fetch error:", err);
+      setCatError(err.message);
+    } finally {
+      setCatLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  // 🔹 Input change
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: "" }));
+  };
+
+  // 🔹 Validation
   const validate = () => {
     const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = 'Product name is required';
-    if (!formData.sku.trim()) newErrors.sku = 'SKU is required';
-    if (!formData.category) newErrors.category = 'Category is required';
-    if (!formData.price || formData.price <= 0) newErrors.price = 'Valid price is required';
-    if (formData.stock === '' || formData.stock < 0) newErrors.stock = 'Valid stock quantity is required';
+    if (!formData.name.trim()) newErrors.name = "Product name is required";
+    if (!formData.sku.trim()) newErrors.sku = "SKU is required";
+    if (!formData.categoryId) newErrors.categoryId = "Category is required";
+    if (!formData.costPrice || formData.costPrice < 0) newErrors.costPrice = "Valid cost price required";
+    if (!formData.sellingPrice || formData.sellingPrice < 0) newErrors.sellingPrice = "Valid selling price required";
+    if (formData.quantity === "" || formData.quantity < 0) newErrors.quantity = "Valid quantity required";
+    if (!formData.reorderLevel || formData.reorderLevel < 0) newErrors.reorderLevel = "Valid reorder level required";
+    if (!formData.supplierName.trim()) newErrors.supplierName = "Supplier name is required";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  // 🔹 Submit
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (validate()) {
-      onSubmit(formData);
-    }
+    if (!validate()) return;
+
+    setLoading(true);
+
+    setTimeout(() => {
+      const payload = { ...formData };
+      if (payload.quantity === 0) payload.status = "out_of_stock";
+
+      if (onSubmit) onSubmit(payload);
+      setLoading(false);
+    }, 500);
   };
 
   return (
-    <form data-testid="inventory-form" onSubmit={handleSubmit} className="flex flex-col gap-6">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <InputField label="Product Name *" name="name" value={formData.name} onChange={handleChange} error={errors.name} />
+        <InputField label="SKU *" name="sku" value={formData.sku} onChange={handleChange} error={errors.sku} />
+
+        {/* 🔹 Category Section */}
         <div className="mb-6">
-          <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">
-            Product Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            className={`w-full px-3.5 py-2.5 border rounded-lg bg-white text-gray-900 text-sm transition-all focus:outline-none focus:ring-3 focus:ring-blue-100 ${
-              errors.name ? 'border-red-500' : 'border-gray-200 focus:border-blue-600'
-            }`}
-            placeholder="Enter product name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-          {errors.name && <span className="text-red-500 text-xs mt-1 block">{errors.name}</span>}
+          <label className="block text-sm font-medium text-gray-900 mb-2">Category *</label>
+
+          <div className="flex gap-2">
+            <select
+              name="categoryId"
+              value={formData.categoryId}
+              onChange={handleChange}
+              className="flex-1 px-3.5 py-2.5 border border-gray-200 rounded-lg focus:border-blue-600"
+            >
+              <option value="">Select Category</option>
+              {categories.map((cat) => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+
+            <button
+              type="button"
+              onClick={() => setShowCategoryModal(true)}
+              className="px-3 py-2 bg-blue-600 text-white rounded-lg"
+            >
+              +
+            </button>
+          </div>
+
+          {errors.categoryId && <span className="text-red-500 text-xs">{errors.categoryId}</span>}
         </div>
 
-        <div className="mb-6">
-          <label htmlFor="sku" className="block text-sm font-medium text-gray-900 mb-2">
-            SKU <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="sku"
-            name="sku"
-            type="text"
-            className={`w-full px-3.5 py-2.5 border rounded-lg bg-white text-gray-900 text-sm transition-all focus:outline-none focus:ring-3 focus:ring-blue-100 ${
-              errors.sku ? 'border-red-500' : 'border-gray-200 focus:border-blue-600'
-            }`}
-            placeholder="e.g., PROD-001"
-            value={formData.sku}
-            onChange={handleChange}
-            required
-          />
-          {errors.sku && <span className="text-red-500 text-xs mt-1 block">{errors.sku}</span>}
-        </div>
+        {/* Remaining Fields */}
+        <InputField label="Cost Price *" name="costPrice" value={formData.costPrice} onChange={handleChange} error={errors.costPrice} />
+        <InputField label="Selling Price *" name="sellingPrice" value={formData.sellingPrice} onChange={handleChange} error={errors.sellingPrice} />
+        <InputField label="Quantity *" name="quantity" value={formData.quantity} onChange={handleChange} error={errors.quantity} />
+        <InputField label="Reorder Level *" name="reorderLevel" value={formData.reorderLevel} onChange={handleChange} error={errors.reorderLevel} />
+        <InputField label="Supplier Name *" name="supplierName" value={formData.supplierName} onChange={handleChange} error={errors.supplierName} />
 
+        {/* Unit */}
         <div className="mb-6">
-          <label htmlFor="category" className="block text-sm font-medium text-gray-900 mb-2">
-            Category <span className="text-red-500">*</span>
-          </label>
-          <select
-            id="category"
-            name="category"
-            className={`w-full px-3.5 py-2.5 border rounded-lg bg-white text-gray-900 text-sm transition-all focus:outline-none focus:ring-3 focus:ring-blue-100 ${
-              errors.category ? 'border-red-500' : 'border-gray-200 focus:border-blue-600'
-            }`}
-            value={formData.category}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select category</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Hardware">Hardware</option>
-            <option value="Accessories">Accessories</option>
-            <option value="Software">Software</option>
-            <option value="Other">Other</option>
+          <label className="block text-sm font-medium text-gray-900 mb-2">Unit *</label>
+          <select name="unit" value={formData.unit} onChange={handleChange} className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg">
+            <option value="pcs">pcs</option>
+            <option value="kg">kg</option>
+            <option value="box">box</option>
+            <option value="pack">pack</option>
+            <option value="litre">litre</option>
+            <option value="dozen">dozen</option>
+            <option value="gram">gram</option>
           </select>
-          {errors.category && <span className="text-red-500 text-xs mt-1 block">{errors.category}</span>}
         </div>
 
+        {/* Status */}
         <div className="mb-6">
-          <label htmlFor="price" className="block text-sm font-medium text-gray-900 mb-2">
-            Price ($) <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="price"
-            name="price"
-            type="number"
-            step="0.01"
-            min="0"
-            className={`w-full px-3.5 py-2.5 border rounded-lg bg-white text-gray-900 text-sm transition-all focus:outline-none focus:ring-3 focus:ring-blue-100 ${
-              errors.price ? 'border-red-500' : 'border-gray-200 focus:border-blue-600'
-            }`}
-            placeholder="0.00"
-            value={formData.price}
-            onChange={handleChange}
-            required
-          />
-          {errors.price && <span className="text-red-500 text-xs mt-1 block">{errors.price}</span>}
+          <label className="block text-sm font-medium text-gray-900 mb-2">Status</label>
+          <select name="status" value={formData.status} onChange={handleChange} className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="out_of_stock">Out of Stock</option>
+          </select>
         </div>
 
-        <div className="mb-6">
-          <label htmlFor="stock" className="block text-sm font-medium text-gray-900 mb-2">
-            Stock Quantity <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="stock"
-            name="stock"
-            type="number"
-            min="0"
-            className={`w-full px-3.5 py-2.5 border rounded-lg bg-white text-gray-900 text-sm transition-all focus:outline-none focus:ring-3 focus:ring-blue-100 ${
-              errors.stock ? 'border-red-500' : 'border-gray-200 focus:border-blue-600'
-            }`}
-            placeholder="0"
-            value={formData.stock}
-            onChange={handleChange}
-            required
-          />
-          {errors.stock && <span className="text-red-500 text-xs mt-1 block">{errors.stock}</span>}
-        </div>
-
-        <div className="mb-6">
-          <label htmlFor="reorderPoint" className="block text-sm font-medium text-gray-900 mb-2">
-            Reorder Point
-          </label>
-          <input
-            id="reorderPoint"
-            name="reorderPoint"
-            type="number"
-            min="0"
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg bg-white text-gray-900 text-sm transition-all focus:outline-none focus:border-blue-600 focus:ring-3 focus:ring-blue-100"
-            placeholder="Minimum stock level"
-            value={formData.reorderPoint}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="mb-6 md:col-span-2">
-          <label htmlFor="description" className="block text-sm font-medium text-gray-900 mb-2">
-            Description
-          </label>
+        {/* Description */}
+        <div className="md:col-span-2 mb-6">
+          <label className="block text-sm font-medium text-gray-900 mb-2">Description</label>
           <textarea
-            id="description"
             name="description"
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg bg-white text-gray-900 text-sm transition-all focus:outline-none focus:border-blue-600 focus:ring-3 focus:ring-blue-100 resize-y min-h-[100px]"
             rows="4"
-            placeholder="Enter product description..."
             value={formData.description}
             onChange={handleChange}
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg"
           />
         </div>
       </div>
 
+      {/* Buttons */}
       <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
-        <button type="button" className="bg-white text-gray-900 border border-gray-200 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors" onClick={onCancel}>
-          Cancel
-        </button>
-        <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-          {isEdit ? 'Update Product' : 'Add Product'}
+        <button type="button" onClick={onCancel} className="bg-white border border-gray-200 px-4 py-2 rounded-lg">Cancel</button>
+        <button type="submit" disabled={loading} className="bg-blue-600 text-white px-4 py-2 rounded-lg">
+          {loading ? "Saving..." : isEdit ? "Update Product" : "Add Product"}
         </button>
       </div>
+
+      {/* 🔹 Category Modal */}
+      <CategoryModal
+        isOpen={showCategoryModal}
+        onClose={() => setShowCategoryModal(false)}
+        categories={categories}
+        fetchCategories={fetchCategories}
+        selectedCategory={formData.categoryId}
+        setSelectedCategory={(id) => setFormData((prev) => ({ ...prev, categoryId: id }))}
+      />
     </form>
   );
 };
+
+// 🔹 Reusable InputField
+const InputField = ({ label, name, value, onChange, error }) => (
+  <div className="mb-6">
+    <label className="block text-sm font-medium text-gray-900 mb-2">{label}</label>
+    <input
+      name={name}
+      type="number"
+      min="0"
+      value={value}
+      onChange={onChange}
+      className={`w-full px-3.5 py-2.5 border rounded-lg ${error ? "border-red-500" : "border-gray-200 focus:border-blue-600"}`}
+    />
+    {error && <span className="text-red-500 text-xs">{error}</span>}
+  </div>
+);
 
 export default InventoryForm;
