@@ -1,6 +1,6 @@
 const Product = require('../models/tenant/Product');
 const Tenant = require('../models/shared/Tenant');
-const Category = require('../models/tenant/Category');
+
 /**
  * ✅ CREATE PRODUCT
  */
@@ -38,15 +38,6 @@ exports.createProduct = async (req, res) => {
     if (!tenant) {
       return res.status(404).json({ message: 'Tenant not found' });
     }
- 
-    const mongoose = require('mongoose');
-    if (categoryId) {
-      if (!mongoose.Types.ObjectId.isValid(categoryId)) 
-        return res.status(400).json({ message: 'Invalid category id' });
-
-      const category = await Category.findOne({ _id: categoryId, tenantId });
-      if (!category) return res.status(404).json({ message: 'Category not found for this tenant' });
-    }
 // 🔍 Check duplicate SKU for the same tenant
 const existingProduct = await Product.findOne({ tenantId, sku });
 if (existingProduct) {
@@ -69,12 +60,8 @@ if (existingProduct) {
       image
     });
 
-    res.status(201).json({
-      success: true,
-      message: 'Product created successfully',
-      data: product
-    });
-    
+    res.status(201).json(product);
+
   } catch (err) {
     if (err.code === 11000) {
       return res.status(400).json({ message: 'SKU already exists' });
@@ -101,38 +88,9 @@ exports.getProducts = async (req, res) => {
       search
     } = req.query;
 
-    // 🔴 tenant required
-    if (!tenantId) {
-      return res.status(400).json({ message: 'Tenant id is required' });
-    }
-
-    // 🔍 Check tenant exists
-    const tenant = await Tenant.findById(tenantId);
-    if (!tenant) {
-      return res.status(404).json({
-        success: false,
-        message: 'Tenant not found'
-      });
-    }
-
-    // 🧠 filter object
     const filter = { tenantId };
 
-    // 📂 category filter
-    const mongoose = require('mongoose');
-    if (categoryId) {
-      if (!mongoose.Types.ObjectId.isValid(categoryId)) {
-        return res.status(400).json({ message: 'Invalid category id format' });
-      }
-      const categoryExists = await Category.findOne({ _id: categoryId, tenantId });
-    if (!categoryExists) {
-    return res.status(404).json({ message: 'Category not found for this tenant' });
-  }
-      filter.categoryId = categoryId;
-    }
-    
-
-    // 🟢 status filter
+    if (categoryId) filter.categoryId = categoryId;
     if (status) filter.status = status;
     if (supplierName) filter.supplierName = supplierName;
     if (unit) filter.unit = unit;
@@ -157,15 +115,7 @@ exports.getProducts = async (req, res) => {
     const products = await Product.find(filter)
       .populate('categoryId', 'name');
 
-      res.status(200).json({
-        success: true,
-        count: products.length,
-        message: products.length
-          ? 'Products fetched successfully'
-          : 'No products found',
-        data: products
-      });
-      
+    res.json(products);
 
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -179,26 +129,12 @@ exports.getProducts = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     const tenantId = req.auth.tenantId;
-    const { categoryId } = req.body;
+
     // 🔴 Tenant validation
     if (!tenantId) {
       return res.status(400).json({ message: 'Tenant id is required' });
     }
-   
-    const tenant = await Tenant.findById(tenantId);
-    if (!tenant) {
-      return res.status(404).json({
-        success: false,
-        message: 'Tenant not found'
-      });
-    }
-    if (categoryId) {
-      if (!mongoose.Types.ObjectId.isValid(categoryId)) 
-        return res.status(400).json({ message: 'Invalid category id' });
 
-      const category = await Category.findOne({ _id: categoryId, tenantId });
-      if (!category) return res.status(404).json({ message: 'Category not found for this tenant' });
-    }
     // 🔍 Check duplicate SKU if user is updating SKU
     if (req.body.sku) {
       const duplicate = await Product.findOne({
@@ -225,12 +161,7 @@ exports.updateProduct = async (req, res) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    res.status(200).json({
-      success: true,
-      message: 'Product updated successfully',
-      data: product
-    });
-    
+    res.json(product);
 
   } catch (err) {
     if (err.name === 'ValidationError') {
@@ -251,19 +182,6 @@ exports.deleteProduct = async (req, res) => {
   try {
     const tenantId = req.auth.tenantId;
 
-    // 🔴 Tenant validation
-    if (!tenantId) {
-      return res.status(400).json({ message: 'Tenant id is required' });
-    }
-   
-     // 🔍 Check tenant exists
-     const tenant = await Tenant.findById(tenantId);
-     if (!tenant) {
-       return res.status(404).json({
-         success: false,
-         message: 'Tenant not found'
-       });
-     }
     const product = await Product.findOneAndDelete({
       _id: req.params.id,
       tenantId

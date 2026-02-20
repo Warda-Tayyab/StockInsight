@@ -53,6 +53,24 @@ const InventoryForm = ({ isEdit = false, initialData = {}, onSubmit, onCancel })
       setCatLoading(false);
     }
   };
+useEffect(() => {
+  if (isEdit && initialData) {
+    setFormData({
+      name: initialData.name || "",
+      sku: initialData.sku || "",
+      categoryId: initialData.categoryId || "",
+      description: initialData.description || "",
+      costPrice: initialData.costPrice || "",
+      sellingPrice: initialData.sellingPrice || "",
+      quantity: initialData.quantity || "",
+      reorderLevel: initialData.reorderLevel || "",
+      unit: initialData.unit || "pcs",
+      supplierName: initialData.supplierName || "",
+      status: initialData.status || "active",
+      image: initialData.image || ""
+    });
+  }
+}, [initialData, isEdit]);
 
   useEffect(() => {
     fetchCategories();
@@ -83,19 +101,13 @@ const InventoryForm = ({ isEdit = false, initialData = {}, onSubmit, onCancel })
 
   // 🔹 Submit
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!validate()) return;
+  e.preventDefault();
+  if (!validate()) return;
 
-    setLoading(true);
-
-    setTimeout(() => {
-      const payload = { ...formData };
-      if (payload.quantity === 0) payload.status = "out_of_stock";
-
-      if (onSubmit) onSubmit(payload);
-      setLoading(false);
-    }, 500);
-  };
+  if (onSubmit) {
+    onSubmit(formData); // 🔥 Parent ko data bhej do
+  }
+};
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -135,11 +147,50 @@ const InventoryForm = ({ isEdit = false, initialData = {}, onSubmit, onCancel })
         </div>
 
         {/* Remaining Fields */}
-        <InputField label="Cost Price *" name="costPrice" value={formData.costPrice} onChange={handleChange} error={errors.costPrice} />
-        <InputField label="Selling Price *" name="sellingPrice" value={formData.sellingPrice} onChange={handleChange} error={errors.sellingPrice} />
-        <InputField label="Quantity *" name="quantity" value={formData.quantity} onChange={handleChange} error={errors.quantity} />
-        <InputField label="Reorder Level *" name="reorderLevel" value={formData.reorderLevel} onChange={handleChange} error={errors.reorderLevel} />
-        <InputField label="Supplier Name *" name="supplierName" value={formData.supplierName} onChange={handleChange} error={errors.supplierName} />
+        <InputField 
+  label="Cost Price *" 
+  name="costPrice" 
+  type="number"
+  value={formData.costPrice} 
+  onChange={handleChange} 
+  error={errors.costPrice} 
+/>
+
+<InputField 
+  label="Selling Price *" 
+  name="sellingPrice" 
+  type="number"
+  value={formData.sellingPrice} 
+  onChange={handleChange} 
+  error={errors.sellingPrice} 
+/>
+
+<InputField 
+  label="Quantity *" 
+  name="quantity" 
+  type="number"
+  value={formData.quantity} 
+  onChange={handleChange} 
+  error={errors.quantity} 
+/>
+
+<InputField 
+  label="Reorder Level *" 
+  name="reorderLevel" 
+  type="number"
+  value={formData.reorderLevel} 
+  onChange={handleChange} 
+  error={errors.reorderLevel} 
+/>
+
+<InputField 
+  label="Supplier Name *" 
+  name="supplierName" 
+  type="text"
+  value={formData.supplierName} 
+  onChange={handleChange} 
+  error={errors.supplierName} 
+/>
 
         {/* Unit */}
         <div className="mb-6">
@@ -200,19 +251,23 @@ const InventoryForm = ({ isEdit = false, initialData = {}, onSubmit, onCancel })
 };
 
 // 🔹 Reusable InputField
-const InputField = ({ label, name, value, onChange, error }) => (
+const InputField = ({ label, name, value, onChange, error, type = "text" }) => (
   <div className="mb-6">
-    <label className="block text-sm font-medium text-gray-900 mb-2">{label}</label>
+    <label className="block text-sm font-medium text-gray-900 mb-2">
+      {label}
+    </label>
     <input
       name={name}
-      type="number"
-      min="0"
+      type={type}
       value={value}
       onChange={onChange}
-      className={`w-full px-3.5 py-2.5 border rounded-lg ${error ? "border-red-500" : "border-gray-200 focus:border-blue-600"}`}
+      className={`w-full px-3.5 py-2.5 border rounded-lg ${
+        error ? "border-red-500" : "border-gray-200 focus:border-blue-600"
+      }`}
     />
     {error && <span className="text-red-500 text-xs">{error}</span>}
   </div>
 );
+
 
 export default InventoryForm;

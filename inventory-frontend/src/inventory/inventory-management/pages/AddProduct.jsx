@@ -6,14 +6,39 @@ import InventoryForm from '../components/InventoryForm';
 const AddProduct = () => {
   const navigate = useNavigate();
 
-  const handleSubmit = (formData) => {
-    // Simulate API call
-    console.log('Adding product:', formData);
-    // In real app, would call API here
-    setTimeout(() => {
-      navigate('/products');
-    }, 500);
-  };
+ const handleSubmit = async (formData) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Unauthorized. Please login again.");
+      return;
+    }
+
+    const response = await fetch("http://localhost:5000/api/products", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(formData)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to add product");
+    }
+
+    alert("Product Added Successfully 🚀");
+
+    navigate("/products");
+
+  } catch (error) {
+    console.error("Add Product Error:", error);
+    alert(error.message);
+  }
+};
+
 
   const handleCancel = () => {
     navigate('/products');
