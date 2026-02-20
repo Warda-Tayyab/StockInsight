@@ -1,8 +1,9 @@
+
 const express = require('express');
 const router = express.Router();
 
-const authenticate = require('../middleware/auth/authenticate');
-const ownerOnly = require('../middleware/auth/ownerOnlyMiddleware');
+// ✅ CHANGED: import from new unified middleware
+const { authenticate, authorize } = require('../middleware/auth/authMiddleware');
 
 const {
   createProduct,
@@ -11,35 +12,36 @@ const {
   deleteProduct
 } = require('../controllers/productController');
 
-// 🔒 CREATE product → ONLY OWNER
+
+// 🔒 CREATE product → OWNER + ACTIVE TENANT
 router.post(
   '/',
   authenticate,
-  ownerOnly,
+  authorize({ roles: ['owner'], requireTenantActive: true }), // ✅ CHANGED
   createProduct
 );
 
-// 🔒 READ products → ONLY OWNER
+// 🔒 READ products → OWNER + ACTIVE TENANT
 router.get(
   '/',
   authenticate,
-  ownerOnly,
+  authorize({ roles: ['owner'], requireTenantActive: true }), // ✅ CHANGED
   getProducts
 );
 
-// 🔒 UPDATE product → ONLY OWNER
+// 🔒 UPDATE product → OWNER + ACTIVE TENANT
 router.put(
   '/:id',
   authenticate,
-  ownerOnly,
+  authorize({ roles: ['owner'], requireTenantActive: true }), // ✅ CHANGED
   updateProduct
 );
 
-// 🔒 DELETE product → ONLY OWNER
+// 🔒 DELETE product → OWNER + ACTIVE TENANT
 router.delete(
   '/:id',
   authenticate,
-  ownerOnly,
+  authorize({ roles: ['owner'], requireTenantActive: true }), // ✅ CHANGED
   deleteProduct
 );
 
