@@ -111,10 +111,29 @@ exports.getProducts = async (req, res) => {
         { sku: { $regex: search, $options: 'i' } }
       ];
     }
-
+    const { sortBy } = req.query;
+    let sort = {};
+    if (sortBy) {
+      switch(sortBy) {
+        case "newest":
+          sort = { createdAt: -1 }; // newest first
+          break;
+        case "oldest":
+          sort = { createdAt: 1 };  // oldest first
+          break;
+        case "lowToHigh":
+          sort = { sellingPrice: 1 }; // price low → high
+          break;
+        case "highToLow":
+          sort = { sellingPrice: -1 }; // price high → low
+          break;
+        default:
+          sort = {}; // no sorting
+      }
+    }
     const products = await Product.find(filter)
-      .populate('categoryId', 'name');
-
+      .populate('categoryId', 'name')
+      .sort(sort);
     res.json(products);
 
   } catch (err) {
