@@ -4,12 +4,15 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { FaEdit, FaTrash } from "react-icons/fa"; // React Icons
+import InventoryForm from "../components/InventoryForm";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const itemsPerPage = 10;
   const token = localStorage.getItem("token");
@@ -84,6 +87,47 @@ const Products = () => {
         },
       });
 
+      fetchProducts();
+    } catch (error) {
+      console.error(error.response?.data || error.message);
+    }
+  };
+
+  // ✅ HANDLE EDIT
+  const handleEdit = (product) => {
+    setSelectedProduct({
+      _id: product._id,
+      name: product.name,
+      sku: product.sku,
+      categoryId: product.categoryId?._id,
+      description: product.description || "",
+      costPrice: product.costPrice,
+      sellingPrice: product.sellingPrice,
+      quantity: product.quantity,
+      unit: product.unit,
+      reorderLevel: product.reorderLevel,
+      supplierName: product.supplierName,
+      status: product.status,
+      image: product.image,
+    });
+    setEditModalOpen(true);
+  };
+
+  // ✅ UPDATE PRODUCT
+  const handleUpdate = async (formData) => {
+    try {
+      await axios.put(
+        `http://localhost:5000/api/products/${selectedProduct._id}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setEditModalOpen(false);
+      setSelectedProduct(null);
       fetchProducts();
     } catch (error) {
       console.error(error.response?.data || error.message);
@@ -203,12 +247,12 @@ const Products = () => {
 
                     <td className="px-4 py-4 text-sm flex gap-2">
                       {/* Edit Icon */}
-                      <Link
-                        to={`/products/edit/${product._id}`}
+                      <button
+                        onClick={() => handleEdit(product)}
                         className="p-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition"
                       >
                         <FaEdit className="w-4 h-4 text-blue-600" />
-                      </Link>
+                      </button>
 
                       {/* Delete Icon */}
                       <button
@@ -257,6 +301,29 @@ const Products = () => {
           >
             Next
           </button>
+        </div>
+      )}
+
+      {/* EDIT MODAL */}
+      {editModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Edit Product</h2>
+              <button
+                onClick={() => setEditModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            <InventoryForm
+              isEdit={true}
+              initialData={selectedProduct}
+              onSubmit={handleUpdate}
+              onCancel={() => setEditModalOpen(false)}
+            />
+          </div>
         </div>
       )}
     </div>
