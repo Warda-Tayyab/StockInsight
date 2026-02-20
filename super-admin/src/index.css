@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-slate-100 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400;
+  }
+}
+
+@layer components {
+  .sa-card {
+    @apply bg-white rounded-xl shadow-md border border-slate-100 p-6;
+  }
+
+  .sa-card-tight {
+    @apply bg-white rounded-xl shadow-md border border-slate-100;
+  }
+
+  .sa-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .sa-table-wrap {
+    @apply overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-md;
+  }
+
+  .sa-table {
+    @apply min-w-full text-left text-sm;
+  }
+
+  .sa-table thead {
+    @apply bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500;
+  }
+
+  .sa-table th {
+    @apply px-4 py-3.5;
+  }
+
+  .sa-table tbody tr {
+    @apply border-b border-slate-100 transition-colors last:border-0;
+  }
+
+  .sa-table tbody tr:nth-child(even) {
+    @apply bg-slate-50/50;
+  }
+
+  .sa-table tbody tr:hover {
+    @apply bg-indigo-50/30;
+  }
+
+  .sa-table td {
+    @apply px-4 py-3.5 text-slate-700 align-middle;
+  }
+
+  .sa-input {
+    @apply block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100;
+  }
+
+  .sa-select {
+    @apply block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100;
+  }
+
+  .sa-label {
+    @apply block text-xs font-medium text-slate-600 mb-1.5;
+  }
+
+  .sa-btn-primary {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .sa-btn-secondary {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-2;
+  }
+
+  .sa-btn-danger {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2;
+  }
+
+  .sa-toggle {
+    @apply relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
+  }
+
+  .sa-toggle-on {
+    @apply bg-indigo-600;
+  }
+
+  .sa-toggle-off {
+    @apply bg-gray-300;
+  }
+
+  .sa-toggle-thumb {
+    @apply pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out;
+  }
+
+  .sa-modal-overlay {
+    @apply fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50;
+  }
+
+  .sa-modal {
+    @apply w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-xl border border-slate-200;
+  }
+
+  .sa-modal-header {
+    @apply flex items-center justify-between gap-4 p-4 border-b border-slate-200;
+  }
+
+  .sa-modal-body {
+    @apply p-4;
+  }
+
+  .sa-modal-footer {
+    @apply flex items-center justify-end gap-3 p-4 border-t border-slate-200 bg-slate-50 rounded-b-xl;
+  }
+}
