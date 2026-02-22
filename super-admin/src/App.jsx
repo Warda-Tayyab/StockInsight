@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import SuperAdminLayout from './layouts/SuperAdminLayout'
+import Login from './pages/super-admin/Login'
 import Dashboard from './pages/super-admin/Dashboard'
 import Tenants from './pages/super-admin/Tenants'
 import TenantDetails from './pages/super-admin/TenantDetails'
@@ -10,6 +11,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/super-admin/login" element={<Login />} />
         <Route path="/super-admin" element={<SuperAdminLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="tenants" element={<Tenants />} />
@@ -17,8 +19,8 @@ function App() {
           <Route path="integrations" element={<Integrations />} />
           <Route path="revenue" element={<Revenue />} />
         </Route>
-        <Route path="/" element={<Navigate to="/super-admin" replace />} />
-        <Route path="*" element={<Navigate to="/super-admin" replace />} />
+        <Route path="/" element={<Navigate to="/super-admin/login" replace />} />
+        <Route path="*" element={<Navigate to="/super-admin/login" replace />} />
       </Routes>
     </BrowserRouter>
   )
