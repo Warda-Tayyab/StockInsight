@@ -1,16 +1,46 @@
-# React + Vite
+# Tickflo Super Admin (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Pure frontend React application (no Next.js, no TypeScript, no API integrations). Built with Vite and react-router-dom.
 
-Currently, two official plugins are available:
+## Run the project
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+npm install
+npm run dev
+```
 
-## React Compiler
+Then open http://localhost:5173 (or the URL shown in the terminal).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Build
 
-## Expanding the ESLint configuration
+```bash
+npm run build
+npm run preview   # preview production build
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## What’s included
+
+- **Routing**: react-router-dom (no Next.js app router).
+- **Auth**: Mock auth via `useAuth` (localStorage; any credentials work on login).
+- **Data**: All data is mocked in hooks (`use-super-admin`, `use-branding`, `use-status`). No axios/fetch/API.
+- **UI**: Existing UI components and Tailwind/Radix remain; no server-side logic.
+
+## Removed
+
+- Next.js (app router, `next.config`, `next/link`, `next/navigation`, `next/font`).
+- TypeScript (converted to JS; some `.tsx`/`.ts` files may remain for reference but entry is JS/JSX).
+- API layer (`api/`, `superadmin-apis/`, `lib/axios`), and all axios/fetch/backend calls.
+- `next-themes` (Toaster uses a fixed theme).
+
+## Routes
+
+- `/` – Redirects to `/dashboard` or `/login` based on auth.
+- `/login` – Login (mock; any email/password).
+- `/dashboard` – Dashboard with mock stats.
+- `/tenant-management` – Tenant list (mock).
+- `/tenant-management/create` – Placeholder (no wizard API).
+- `/tenant-management/:id` – Tenant details (mock).
+- `/tenant-management/:id/edit` – Tenant edit (mock).
+- `/pricing-plans` – Pricing plans (mock).
+- `/integrations` – Integrations (mock).
+- `/system-settings` – System settings (UI only).
